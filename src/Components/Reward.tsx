@@ -122,6 +122,9 @@ export default function Reward() {
           <div className="modal-content bg-light p-4 rounded-5">
             <h3>Reward Claimed</h3>
             <p>{modalMessage}</p>
+            <div>
+              <a></a>
+            </div>
             <div className="modal-buttons">
               <button
                 onClick={() => setShowClaimModal(false)}

@@ -85,19 +85,14 @@
   margin-left: 4rem;
 }
 
-
-
-
-
-
 .user-section {
   position: fixed;
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 10px;
+  padding: 0px 7px;
   transition: background-color 0.3s ease;
-  bottom: 10px;
+  bottom: 7px;
 }
 
 .user-section:hover {
@@ -110,12 +105,17 @@
   border-radius: 50%;
 }
 
-.user-name {
-  font-size: 14px;
-  font-weight: 500;
+.username {
+  font-size: 17px;
+  font-weight: 600;
 }
 
-/* Responsive Styles */
+#user-avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     width: 5rem;
@@ -131,5 +131,11 @@
 
   .sidebar.expanded+.content {
     margin-left: 12rem;
+  }
+
+  #user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
   }
 }

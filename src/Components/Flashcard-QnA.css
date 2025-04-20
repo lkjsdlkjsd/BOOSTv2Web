@@ -1,9 +1,7 @@
-/* Exit button styling */
 #exit-btn {
   cursor: pointer;
 }
 
-/* Background container for deck and score */
 #bg-1 {
   font-size: 1rem;
   flex-wrap: wrap;
@@ -15,7 +13,6 @@
   gap: 1rem;
 }
 
-/* Question card styling */
 #question-card {
   font-size: 1.5rem;
   font-weight: bold;
@@ -26,7 +23,6 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Choice button styling */
 #choice-btn {
   font-size: 1rem;
   background-color: #FFCE1B;
@@ -41,7 +37,6 @@
   background-color: #e6b800;
 }
 
-/* Button success and danger states */
 .btn-success {
   background-color: #28a745 !important;
   color: white;
@@ -52,7 +47,6 @@
   color: white;
 }
 
-/* Secondary and warning button styles */
 .btn-secondary {
   background-color: #6c757d !important;
   color: white;
@@ -63,7 +57,6 @@
   color: white;
 }
 
-/* Progress bar styling */
 progress {
   width: 100%;
   height: 20px;
@@ -88,7 +81,6 @@ progress::-moz-progress-bar {
   transition: width 0.8s ease;
 }
 
-/* Quiz completed container styling */
 #quiz-completed-container {
   display: flex;
   flex-direction: column;
@@ -102,7 +94,6 @@ progress::-moz-progress-bar {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   #bg-1 {
     font-size: 0.9rem;

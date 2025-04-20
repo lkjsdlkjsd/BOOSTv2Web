@@ -2,6 +2,7 @@
     background-color: #FFCE1B;
     color: white;
     width: 15rem;
+    border-color: none;
 }
 #delete-btn{
     background-color: red;

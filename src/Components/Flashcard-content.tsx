@@ -174,7 +174,7 @@ export default function FlashcardContent({
               <p className="mb-2 text-muted text-center text-md-start text-wrap">by: @user</p>
               <div className="d-flex align-items-center gap-3 flex-wrap justify-content-center justify-content-md-start">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-warning"
                   id="start-btn"
                   onClick={() => setIsStarting(true)}
                   disabled={cards.length < 4}

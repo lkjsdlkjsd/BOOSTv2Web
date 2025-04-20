@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Flashcard.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BsSearch } from "react-icons/bs";
-import ExpBar from "./exp-notif-cal.tsx";
 import FlashcardDetails from "./Flashcard-content.tsx";
 import { firestore, auth } from "../firebase";
 import {
@@ -215,13 +213,9 @@ export default function Flashcard() {
 
   return (
     <React.Fragment>
-      <ExpBar />
       {activeComponent === "flashcard" ? (
         <>
           <div className="row w-100 ps-3 pe-3">
-            <button className="btn col-auto border rounded-5 me-2" id="search">
-              <BsSearch />
-            </button>
             <input
               className="col rounded-5 border"
               id="searchinput"
@@ -237,7 +231,7 @@ export default function Flashcard() {
                 <h3 className="ms-3">{highlightText(topic.title, searchQuery)}</h3>
                 <div className="me-3">
                   <button
-                    className="btn btn-sm btn-outline-primary me-2"
+                    className="btn btn-sm btn-outline-warning me-2"
                     onClick={() => {
                       setCurrentTopic(topic);
                       setEditTopicTitle(topic.title);
