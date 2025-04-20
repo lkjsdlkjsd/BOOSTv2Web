@@ -640,7 +640,7 @@ const PomodoroTimer: React.FC = () => {
         {showSettings && (
           <Card
             id="SettingsPanel"
-            className={`p-4 rounded bg-light text-dark position-fixed end-0 top-0 mt-3 ${
+            className={`p-4 rounded bg-light text-dark position-absolute end-0 top-0 mt-3 ${
               showSettings ? "show" : "hide"
             }`}
             style={{ width: "300px", zIndex: "1999" }}

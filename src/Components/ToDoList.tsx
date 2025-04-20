@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, FormCheck } from "react-bootstrap";
 import "./ToDoList.css";
 import { db, auth } from "../firebase";
+import { Timestamp, serverTimestamp } from "firebase/firestore";
 import {
   doc,
   setDoc,
   updateDoc,
-  serverTimestamp,
-  Timestamp,
   collection,
   query,
   where,
@@ -31,18 +30,17 @@ interface Task {
   progress: number;
   timeLeft: string;
   completed: boolean;
-  createdAt: Timestamp | null;
   priority: string;
-  estimatedTime: string;
   status: string;
   userId: string;
+  createdAt: Timestamp | null;
+  completedTime: string | null;
 }
-import { User } from "firebase/auth";
 
 const FcTodoList: React.FC = () => {
   const [_showModal, setShowModal] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<firebase.User | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState<Task>({
     id: "",
@@ -56,9 +54,9 @@ const FcTodoList: React.FC = () => {
     completed: false,
     createdAt: null,
     priority: "",
-    estimatedTime: "",
     status: "pending",
     userId: "",
+    completedTime: null,
   });
   const [_modalContent, setModalContent] = useState<{
     title: string;
@@ -99,6 +97,10 @@ const FcTodoList: React.FC = () => {
     fetchTasks();
   }, [user]);
 
+  const pad = (num: number): string => {
+    return num.toString().padStart(2, "0");
+  };
+
   const _handleShow = (title: string, description: string) => {
     setShowModal(true);
     setModalContent({ title, description });
@@ -121,9 +123,9 @@ const FcTodoList: React.FC = () => {
       completed: false,
       createdAt: null,
       priority: "",
-      estimatedTime: "",
       status: "pending",
       userId: "",
+      completedTime: null,
     });
     setDueDateError(false);
     setError(null);
@@ -152,12 +154,9 @@ const FcTodoList: React.FC = () => {
     try {
       if (!user) return;
 
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
-
-      if (newTask.dueDate) {
-        const dueDate = new Date(newTask.dueDate);
-        dueDate.setUTCHours(0, 0, 0, 0);
+      if (newTask.dueDate && newTask.dueDate < new Date()) {
+        setDueDateError(true);
+        return;
       }
 
       const newTaskWithId = {
@@ -167,24 +166,14 @@ const FcTodoList: React.FC = () => {
         timeLeft: calculateTimeLeft(newTask.dueDate),
         userId: user.uid,
         status: "pending",
+        completedTime: null,
       };
 
       await setDoc(
         doc(db, "users", user.uid, "todolist", newTaskWithId.id),
         newTaskWithId
       );
-
-      const q = query(
-        collection(db, "users", user.uid, "todolist"),
-        where("userId", "==", user.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const updatedTasks: Task[] = [];
-      querySnapshot.forEach((doc) => {
-        updatedTasks.push({ id: doc.id, ...doc.data() } as Task);
-      });
-      setTasks(updatedTasks);
-
+      setTasks([...tasks, newTaskWithId]); //Update locally
       handleAddTaskClose();
     } catch (error) {
       setError("Error adding task. Please try again later.");
@@ -207,19 +196,32 @@ const FcTodoList: React.FC = () => {
 
   const handleTaskComplete = async (task: Task) => {
     setError(null);
-    if (user && task.id) {
+    if (user && task.id && task.createdAt) {
       try {
-        const updatedTask = { ...task, completed: true, status: "completed" };
+        const now = new Date();
+        const createdAt = task.createdAt.toDate();
+        const diff = now.getTime() - createdAt.getTime();
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        const timeTaken = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+        const updatedTask = {
+          ...task,
+          completed: true,
+          status: "completed",
+          completedTime: timeTaken,
+        };
+
         await updateDoc(
           doc(db, "users", user.uid, "todolist", task.id),
           updatedTask
         );
-
         setTasks((prevTasks) =>
-          prevTasks.map((t) =>
-            t.id === task.id ? { ...t, ...updatedTask } : t
-          )
-        );
+          prevTasks.map((t) => (t.id === task.id ? updatedTask : t))
+        ); //Update locally
       } catch (error) {
         setError("Error completing task. Please try again later.");
         console.error("Error completing task:", error);
@@ -237,9 +239,17 @@ const FcTodoList: React.FC = () => {
     if (!dueDate) return "";
     const now = new Date();
     const diff = dueDate.getTime() - now.getTime();
+    if (diff < 0) return "Overdue";
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (minutes < 0) return "Overdue";
-    return `${minutes} Min Left`;
+
+    let timeLeftString = "";
+    if (days > 0) timeLeftString += `${days}d `;
+    if (hours > 0) timeLeftString += `${hours}h `;
+    timeLeftString += `${minutes}m`;
+    return timeLeftString;
   };
 
   const renderTaskCard = (task: Task) => (
@@ -247,6 +257,7 @@ const FcTodoList: React.FC = () => {
       <div className="card p-3" style={{ width: "22rem" }}>
         <div className="d-flex align-items-center">
           <span className="badge bg-success mr-auto ">{task.timeLeft}</span>
+          {/* Edit functionality needs to be implemented */}
           <FaEdit size={35} style={{ cursor: "pointer" }} className="p-2" />
           <MdDelete
             onClick={() => handleDeleteTask(task.id)}
@@ -266,20 +277,22 @@ const FcTodoList: React.FC = () => {
               {formatDate(task.dueDate)}
             </span>
           </div>
-          <div className="d-flex align-items-center">
-            <span>Estimated Time: {task.estimatedTime}</span>
-          </div>
+          <span>
+            {task.status === "completed"
+              ? `Time Taken: ${task.completedTime ?? "N/A"}`
+              : ""}
+          </span>
         </div>
-
-        {task.status !== "completed" && (
-          <FormCheck
-            type="checkbox"
-            label="Complete"
-            checked={task.completed}
-            onChange={() => handleTaskComplete(task)}
-          />
-        )}
       </div>
+
+      {task.status !== "completed" && (
+        <FormCheck
+          type="checkbox"
+          label="Complete"
+          checked={task.completed}
+          onChange={() => handleTaskComplete(task)}
+        />
+      )}
     </div>
   );
 
@@ -387,7 +400,7 @@ const FcTodoList: React.FC = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskDueDate">Due Date</Form.Label>
+              <Form.Label htmlFor="taskDueDate">Due Date & Time</Form.Label>
               <DatePicker
                 id="taskDueDate"
                 selected={newTask.dueDate}
@@ -396,21 +409,25 @@ const FcTodoList: React.FC = () => {
                 }
                 name="dueDate"
                 className="form-control"
+                showTimeSelect
+                showTimeSelectOnly={false}
+                timeIntervals={15}
+                timeCaption="Time"
+                dateFormat="MMMM d, yyyy h:mm aa"
                 minDate={new Date()}
-                placeholderText="Select due date"
+                placeholderText="Select due date and time"
                 showPopperArrow={false}
-                dateFormat="MMMM d, yyyy"
                 autoComplete="off"
-                onKeyDown={(e) => e.preventDefault()}
               />
               {dueDateError && (
-                <p className="text-danger">Due date cannot be in the past.</p>
+                <p className="text-danger">
+                  Due date and time cannot be in the past.
+                </p>
               )}
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskPriority">Priority</Form.Label>
+              <Form.Label>Priority</Form.Label>
               <Form.Select
-                id="taskPriority"
                 value={newTask.priority}
                 onChange={(e) =>
                   setNewTask((prev) => ({ ...prev, priority: e.target.value }))
@@ -420,26 +437,6 @@ const FcTodoList: React.FC = () => {
                 <option value="Low">Low</option>
                 <option value="Medium">Medium</option>
                 <option value="High">High</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskEstimatedTime">
-                Estimated Time
-              </Form.Label>sa
-              <Form.Select
-                id="taskEstimatedTime"
-                name="estimatedTime"
-                value={newTask.estimatedTime}
-                onChange={handleAddTaskChange}
-              >
-                <option value="">Select estimated time</option>
-                <option value="15 minutes">15 minutes</option>
-                <option value="30 minutes">30 minutes</option>
-                <option value="45 minutes">45 minutes</option>
-                <option value="1 hour">1 hour</option>
-                <option value="1 hour 30 minutes">1 hour 30 minutes</option>
-                <option value="2 hours">2 hours</option>
-                <option value="3+ hours">3+ hours</option>
               </Form.Select>
             </Form.Group>
             <Form.Label>Checklist</Form.Label>
@@ -472,7 +469,6 @@ const FcTodoList: React.FC = () => {
             <Button variant="link" onClick={handleAddChecklist}>
               Add Checklist Item
             </Button>
-
             {error && <p className="text-danger">{error}</p>}
           </Form>
         </Modal.Body>

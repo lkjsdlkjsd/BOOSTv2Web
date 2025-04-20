@@ -74,14 +74,38 @@ export default function Reward() {
 
   // Rewards data
   const rewards = [
-    { name: "Spotify Premium", icon: <SiSpotify size={100} />, xpRequired: 15000 },
+    {
+      name: "Spotify Premium",
+      icon: <SiSpotify size={100} />,
+      xpRequired: 15000,
+    },
     { name: "Netflix", icon: <SiNetflix size={100} />, xpRequired: 100000 },
     { name: "Canva Pro", icon: <SiCanva size={100} />, xpRequired: 12000 },
-    { name: "Discord Nitro", icon: <SiDiscord size={100} />, xpRequired: 16000 },
-    { name: "Scribd Subscription", icon: <SiScribd size={100} />, xpRequired: 18000 },
-    { name: "YouTube Premium", icon: <SiYoutube size={100} />, xpRequired: 13000 },
-    { name: "Grammarly Pro", icon: <SiGrammarly size={100} />, xpRequired: 12000 },
-    { name: "Valorant Points", icon: <SiValorant size={100} />, xpRequired: 25000 },
+    {
+      name: "Discord Nitro",
+      icon: <SiDiscord size={100} />,
+      xpRequired: 16000,
+    },
+    {
+      name: "Scribd Subscription",
+      icon: <SiScribd size={100} />,
+      xpRequired: 18000,
+    },
+    {
+      name: "YouTube Premium",
+      icon: <SiYoutube size={100} />,
+      xpRequired: 13000,
+    },
+    {
+      name: "Grammarly Pro",
+      icon: <SiGrammarly size={100} />,
+      xpRequired: 12000,
+    },
+    {
+      name: "Valorant Points",
+      icon: <SiValorant size={100} />,
+      xpRequired: 25000,
+    },
     { name: "Robux", icon: <SiRoblox size={100} />, xpRequired: 40000 },
   ];
 
@@ -96,13 +120,17 @@ export default function Reward() {
         <p className="mb-4">Your Total XP: {userXp.toLocaleString()} XP</p>
         <div className="rewards-grid">
           {rewards.map((reward, index) => (
-            <div className="card" key={index}>
+            <div
+              className="card d-flex justify-content-center text-center"
+              key={index}
+            >
               <div className="icon-wrapper">{reward.icon}</div>
               <div>{reward.name}</div>
               <div>{reward.xpRequired.toLocaleString()} Experience</div>
               <progress value={userXp} max={reward.xpRequired} />
               <div>
-                {userXp.toLocaleString()}/{reward.xpRequired.toLocaleString()} XP
+                {userXp.toLocaleString()}/{reward.xpRequired.toLocaleString()}{" "}
+                XP
               </div>
               <button
                 className="btn btn-warning"

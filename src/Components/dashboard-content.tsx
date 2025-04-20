@@ -13,6 +13,7 @@ import {
   Timestamp,
   doc,
   getDoc,
+  setDoc,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import {
@@ -26,7 +27,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar, Pie } from "react-chartjs-2";
-import { Dropdown } from "react-bootstrap"; // Importing Dropdown from react-bootstrap
+import { Dropdown } from "react-bootstrap";
 
 ChartJS.register(
   CategoryScale,
@@ -61,7 +62,8 @@ export default function HomePage() {
     verse: "",
     explanation: "",
   });
-  const [loading, setLoading] = useState<boolean>(true); // State to handle loading
+  const [loading, setLoading] = useState<boolean>(true);
+  const [hasBoostedToday, setHasBoostedToday] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -127,10 +129,9 @@ export default function HomePage() {
         }
       });
 
-      // Calculate streak: consecutive days with completed tasks (starting from yesterday)
       let streak = 0;
       let currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() - 1); // yesterday
+      currentDate.setDate(currentDate.getDate() - 1);
 
       while (completedDates.has(currentDate.toDateString())) {
         streak++;
@@ -170,63 +171,81 @@ export default function HomePage() {
           verse:
             "I can do all things through Christ who strengthens me. – Philippians 4:13",
           explanation:
-            "This verse reminds us that with Christ's strength, we can overcome any challenges.",
+            "With Christ's strength, we can overcome any challenges.",
         },
         {
           verse:
-            "For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope. – Jeremiah 29:11",
+            "For I know the plans I have for you, declares the Lord... – Jeremiah 29:11",
           explanation:
-            "This verse reassures us that God has a good plan for our lives, filled with hope and a bright future.",
+            "God has a good plan for our lives, filled with hope and a bright future.",
         },
         {
           verse: "The Lord is my shepherd; I shall not want. – Psalm 23:1",
           explanation:
-            "This verse reminds us that God provides for all our needs and will guide us through life.",
-        },
-        {
-          verse:
-            "But the fruit of the Spirit is love, joy, peace, forbearance, kindness, goodness, faithfulness, gentleness, and self-control. – Galatians 5:22-23",
-          explanation:
-            "This verse encourages us to live by the Holy Spirit’s fruits, showing kindness and love to others.",
-        },
-        {
-          verse:
-            "The Lord is near to the brokenhearted and saves the crushed in spirit. – Psalm 34:18",
-          explanation:
-            "This verse assures us that even in our darkest moments, God is close to us, comforting and healing our hearts.",
-        },
-        {
-          verse:
-            "Cast all your anxiety on Him because He cares for you. – 1 Peter 5:7",
-          explanation:
-            "This verse reminds us to give our worries to God, trusting in His care and love for us.",
-        },
-        {
-          verse:
-            "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go. – Joshua 1:9",
-          explanation:
-            "This verse encourages us to be brave and courageous, knowing that God is always with us, guiding our path.",
-        },
-        {
-          verse:
-            "For God gave us a spirit not of fear but of power and love and self-control. – 2 Timothy 1:7",
-          explanation:
-            "This verse reminds us that with God's spirit, we have the power to overcome fear and live with love and self-control.",
+            "God provides for all our needs and will guide us through life.",
         },
       ];
-
       const randomMessage =
         messages[Math.floor(Math.random() * messages.length)];
       setProductivityMessage(randomMessage);
     };
 
+    const checkBoostStatus = async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const db = getFirestore();
+      const boostDocRef = doc(db, "users", user.uid, "streak", "boost");
+
+      const docSnap = await getDoc(boostDocRef);
+      if (docSnap.exists()) {
+        const lastBoostDate = docSnap.data().lastBoost?.toDate();
+        const today = new Date();
+        if (
+          lastBoostDate &&
+          lastBoostDate.toDateString() === today.toDateString()
+        ) {
+          setHasBoostedToday(true);
+        }
+      }
+    };
+
     fetchTasks();
     fetchUserName();
     getRandomProductivityMessage();
+    checkBoostStatus();
 
-    // Set loading to false after all data has been fetched
     setLoading(false);
   }, [view]);
+
+  const handleBoost = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const db = getFirestore();
+    const boostDocRef = doc(db, "users", user.uid, "streak", "boost");
+
+    const docSnap = await getDoc(boostDocRef);
+    const today = new Date();
+
+    if (docSnap.exists()) {
+      const lastBoostDate = docSnap.data().lastBoost?.toDate();
+      if (
+        lastBoostDate &&
+        lastBoostDate.toDateString() === today.toDateString()
+      ) {
+        alert("You already boosted today!");
+        return;
+      }
+    }
+
+    await setDoc(boostDocRef, { lastBoost: new Date() });
+    setStreakDays((prev) => prev + 1);
+    setHasBoostedToday(true);
+    alert("Boost activated!");
+  };
 
   const completionPercentage =
     completedCount + inProgressCount > 0
@@ -252,7 +271,7 @@ export default function HomePage() {
             {
               label: "Tasks Added (Weekly)",
               data: dailyTaskCounts,
-              backgroundColor: "Orange",
+              backgroundColor: "orange",
               borderRadius: 10,
             },
           ],
@@ -272,9 +291,7 @@ export default function HomePage() {
           ],
         };
 
-  if (loading) {
-    return <div className="text-center">Loading...</div>; // Loading state
-  }
+  if (loading) return <div className="text-center">Loading...</div>;
 
   return (
     <div>
@@ -283,7 +300,7 @@ export default function HomePage() {
       </div>
       <div className="greeting-container">
         <h2 className="greeting-heading">
-          {userName ? "Hello, " + userName : " " + "Hello, kaBOOST!"}
+          {userName ? "Hello, " + userName : "Hello, kaBOOST!"}
         </h2>
         <h3 className="subheading">
           Make your day start productive and cheerful
@@ -340,7 +357,6 @@ export default function HomePage() {
           <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
             {view.charAt(0).toUpperCase() + view.slice(1)}
           </Dropdown.Toggle>
-
           <Dropdown.Menu>
             <Dropdown.Item onClick={() => setView("weekly")}>
               Weekly
@@ -352,40 +368,21 @@ export default function HomePage() {
         </Dropdown>
       </div>
 
-      <div className="row mt-3  p-3">
+      <div className="row mt-3 p-3">
         <div className="col-md-6">
           <Bar
-            className="shadow"
             data={barChartData}
             options={{
               responsive: true,
-              plugins: {
-                legend: {
-                  display: true,
-                  position: "top",
-                },
-              },
-              elements: {
-                bar: {
-                  borderColor: "black",
-                },
-              },
+              maintainAspectRatio: false,
+              plugins: { legend: { display: true, position: "top" } },
+              elements: { bar: { borderColor: "black" } },
               scales: {
-                x: {
-                  ticks: {
-                    color: "black",
-                  },
-                },
-                y: {
-                  ticks: {
-                    color: "black",
-                  },
-                },
+                x: { ticks: { color: "black" } },
+                y: { ticks: { color: "black" } },
               },
             }}
-            style={{
-              backgroundColor: "white",
-            }}
+            style={{ height: "300px", backgroundColor: "white" }}
           />
         </div>
         <div className="col-md-3 p-3">
@@ -394,30 +391,24 @@ export default function HomePage() {
             data={pieChartData}
             options={{
               responsive: true,
-              plugins: {
-                legend: { display: true, position: "top" },
-              },
-              animations: {
-                tension: {
-                  duration: 1000,
-                  easing: "linear",
-                  from: 1,
-                  to: 0,
-                  loop: true,
-                },
-              },
+              plugins: { legend: { display: true, position: "top" } },
             }}
-          />{" "}
+          />
         </div>
         <div className="col-md-3 d-flex flex-column align-items-center justify-content-center">
-          <div className="card shadow">
-            <div className="card-body">
-              <h6 className="text-center streak-title">
+          <div className="card shadow w-100">
+            <div className="card-body text-center">
+              <h6 className="streak-title">
                 <span className="flame-emoji">🔥</span> Streak Days
               </h6>
-              <h3 className="streak-count">
-                <span className="flame-emoji"></span> {streakDays}
-              </h3>
+              <h3 className="streak-count">{streakDays}</h3>
+              <button
+                className="btn btn-success w-100 mt-2"
+                onClick={handleBoost}
+                disabled={hasBoostedToday}
+              >
+                {hasBoostedToday ? "Already Boosted Today" : "BOOST NOW"}
+              </button>
             </div>
           </div>
         </div>

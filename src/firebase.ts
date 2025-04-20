@@ -22,4 +22,4 @@ const firestore = getFirestore(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
-export { auth, db, firestore, googleProvider, facebookProvider, createUserWithEmailAndPassword, signInWithPopup, sendEmailVerification, firebaseConfig };
+export { auth, db, firestore, googleProvider, facebookProvider, createUserWithEmailAndPassword, signInWithPopup, sendEmailVerification, firebaseConfig, app };

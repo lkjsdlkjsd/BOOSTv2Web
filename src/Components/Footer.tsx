@@ -5,7 +5,7 @@ function Footer() {
     <footer className="container mt-5 border-top pt-4">
       <div className="row">
         {/* Contact Section */}
-        <div className="col-md-4">
+        <div className="col-md-8">
           <div className="mb-3">
             <img
               src="/src/assets/BOOSTWORD.png"
@@ -14,35 +14,14 @@ function Footer() {
             />
           </div>
           <p>
-            <strong>Email:</strong> hello@skillbridge.com
+            <strong>Email:</strong> BulaCanBoost@gmail.com
           </p>
           <p>
-            <strong>Phone:</strong> +91 98183 23 2309
+            <strong>Phone:</strong> +63 9510609840
           </p>
           <p>
-            <strong>Address:</strong> Somewhere in the World
+            <strong>Address:</strong> Malolos, Bulacan
           </p>
-        </div>
-
-        {/* Navigation Section */}
-        <div className="col-md-4">
-          <div>
-            <h6>Home</h6>
-            <ul className="list-unstyled">
-              <li>Benefits</li>
-              <li>Our Courses</li>
-              <li>Our Testimonials</li>
-              <li>Our FAQ</li>
-            </ul>
-          </div>
-          <div>
-            <h6>About Us</h6>
-            <ul className="list-unstyled">
-              <li>Company</li>
-              <li>Achievements</li>
-              <li>Our Goals</li>
-            </ul>
-          </div>
         </div>
 
         {/* Social Profiles Section */}
