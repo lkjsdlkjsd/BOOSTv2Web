@@ -13,8 +13,8 @@
 }
 
 .profile-avatar {
-    width: 20vw;
-    height: 20vw;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     border: 2px solid #ddd;
 }
@@ -52,4 +52,24 @@
     margin-left: auto;
     color: blue;
     cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+    .profile-container {
+        padding: 10px;
+    }
+
+    .profile-avatar {
+        width: 20vw;
+        height: 20vw;
+    }
+
+    .profile-info h2 {
+        font-size: 20px;
+    }
+
+    .profile-info p {
+        font-size: 14px;
+    }
+    
 }

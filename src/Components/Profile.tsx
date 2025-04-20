@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { supabase } from "../supabase"; // Import the Supabase client
-import { Button } from "react-bootstrap";
+import { supabase } from "../supabase";
 import { FaPen } from "react-icons/fa";
 import "./Profile.css";
 
@@ -14,8 +13,8 @@ const Profile: React.FC = () => {
     sex: "",
     birthday: "",
     occupation: "",
-    createdAt: "", // Add the createdAt field
-    profilePictureUrl: "", // URL for profile picture
+    createdAt: "",
+    profilePictureUrl: "", 
   });
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -41,10 +40,9 @@ const Profile: React.FC = () => {
             profilePictureUrl: data.profilePicture || "",
           }));
 
-          // Fetch profile picture from Supabase Storage if available
           if (data.profilePicture) {
             const { data: profilePictureData, error } = await supabase.storage
-              .from("profile-pictures") // Specify the Supabase bucket
+              .from("profile-pictures") 
               .download(data.profilePicture);
 
             if (error) {
@@ -61,9 +59,8 @@ const Profile: React.FC = () => {
   }, []);
 
   const formatDate = (timestamp: any) => {
-    // Format the createdAt timestamp to a readable date format
     const date = timestamp.toDate();
-    const options = { year: "numeric", month: "long", day: "numeric" }; // Remove weekday
+    const options = { year: "numeric", month: "long", day: "numeric" }; 
     return date.toLocaleDateString("en-US", options);
   };
 
@@ -73,7 +70,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-container">
-      {/* Header */}
       <div className="profile-header">
         <img
           src={userData.profilePictureUrl || "default-avatar.png"}
@@ -85,11 +81,9 @@ const Profile: React.FC = () => {
           <span>
             Joined on {userData.createdAt || "Date not available"}
           </span>{" "}
-          {/* Display CreatedAt */}
         </div>
       </div>
 
-      {/* Contact Info */}
       <div className="profile-section">
         <h3>Contact Info</h3>
         <p> emails: {userData.email || "Email not available"}</p>
@@ -97,12 +91,10 @@ const Profile: React.FC = () => {
         <p> Occupation: {userData.occupation || "Occupation not available"}</p>
       </div>
 
-      {/* Bio Section */}
       <div className="profile-section">
         <h3>Bio</h3>
         <p>{userData.birthday || "Birthday: " + "Birthday not available"}</p>
       </div>
-      {/* Achievements Section */}
       <div className="profile-section">
         <h3>Achievements</h3>
         <div className="achievements">

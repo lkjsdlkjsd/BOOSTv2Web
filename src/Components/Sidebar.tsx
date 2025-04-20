@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./Sidebar.css";
+import { AiOutlineTeam } from "react-icons/ai";
 import { BsCardText } from "react-icons/bs";
-import { FaUserCircle } from "react-icons/fa";
 import { IoRibbon } from "react-icons/io5";
 import { LayoutGrid, ListCheck, Timer, Brain, Settings } from "lucide-react";
 import Brainstorming from "./Brainstorming.tsx";
@@ -12,6 +12,7 @@ import FlashCards from "./Flashcard.tsx";
 import SettingsTabs from "./Settings.tsx";
 import Profile from "./Profile.tsx";
 import Reward from "./Reward.tsx";
+import ColabTab from "./Colab-tab.tsx";
 import { FiMenu } from "react-icons/fi";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -21,6 +22,7 @@ export default function Sidebar() {
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("activeTab") || "Dashboard";
   });
+  const [showProfile, setShowProfile] = useState(false); // New state for showing the Profile
   const [userData, setUserData] = useState<any>({
     profilePictureUrl: "",
     name: "",
@@ -55,7 +57,6 @@ export default function Sidebar() {
       icon: <Brain size={20} />,
       component: <Brainstorming />,
     },
-
     {
       name: "Rewards",
       icon: <IoRibbon size={20} />,
@@ -65,11 +66,10 @@ export default function Sidebar() {
       name: "Settings",
       icon: <Settings size={20} />,
       component: <SettingsTabs />,
-    },
-    {
-      name: "Profile",
-      icon: <FaUserCircle size={20} />,
-      component: <Profile />,
+    }, {
+      name: "Colaboration",
+      icon: <AiOutlineTeam size={20} />,
+      component: <ColabTab />,
     },
   ];
 
@@ -129,7 +129,10 @@ export default function Sidebar() {
             <li
               key={item.name}
               className={`menu-item ${activeTab === item.name ? "active" : ""}`}
-              onClick={() => setActiveTab(item.name)}
+              onClick={() => {
+                setActiveTab(item.name);
+                setShowProfile(false); 
+              }}
             >
               {item.icon}
               {!isCollapsed && <span>{item.name}</span>}
@@ -142,22 +145,11 @@ export default function Sidebar() {
             src={userData.profilePictureUrl || "default-avatar.png"}
             alt="User Avatar"
             className="profile-avatar"
-            onClick={() => setActiveTab("Profile")}
-            style={{ width: "4vw", height: "4vw", borderRadius: "50%" }}
-          />
-          {!isCollapsed && (
-            <span className="username px-2">{userData.name}</span>
-          )}
-        </div>
-
-        {/* Profile Section */}
-        <div className="user-section" style={{ cursor: "pointer" }}>
-          <img
-            src={userData.profilePictureUrl || "default-avatar.png"}
-            alt="User Avatar"
-            className="profile-avatar"
-            onClick={() => setActiveTab("Profile")}
-            style={{ width: "4vw", height: "4vw", borderRadius: "50%" }}
+            onClick={() => {
+              setShowProfile(true); 
+              setActiveTab(""); 
+            }}
+            id="user-avatar"
           />
           {!isCollapsed && (
             <>
@@ -168,13 +160,17 @@ export default function Sidebar() {
       </div>
 
       <div className="content">
-        {menuItems.map(
-          (item) =>
-            item.name === activeTab && (
-              <div key={item.name} className="tab-content">
-                {item.component}
-              </div>
-            )
+        {showProfile ? (
+          <Profile />
+        ) : (
+          menuItems.map(
+            (item) =>
+              item.name === activeTab && (
+                <div key={item.name} className="tab-content">
+                  {item.component}
+                </div>
+              )
+          )
         )}
       </div>
     </div>
