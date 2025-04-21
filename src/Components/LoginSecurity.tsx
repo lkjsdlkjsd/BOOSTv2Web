@@ -7,11 +7,13 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
+  signOut, // Import signOut from Firebase Authentication
 } from "firebase/auth";
 import { auth, facebookProvider, googleProvider } from "../firebase";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons from react-icons
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import "./LoginSecurity.css";
 
 const LoginSecurity = () => {
@@ -24,6 +26,7 @@ const LoginSecurity = () => {
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false); // State to toggle old password visibility
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false); // State to toggle new password visibility
   const db = getFirestore();
+  const navigate = useNavigate(); // Initialize the navigate function
 
   // Fetch user data on initial render
   useEffect(() => {
@@ -62,31 +65,6 @@ const LoginSecurity = () => {
     } catch (err) {
       console.error(err);
       alert("Error deleting account.");
-    }
-  };
-
-  // Handle data download
-  const handleDownloadData = async () => {
-    if (!auth.currentUser) return alert("No user is logged in.");
-    if (!window.confirm("Download your data?")) return;
-
-    try {
-      const userDoc = doc(db, "users", auth.currentUser.uid);
-      const snap = await getDoc(userDoc);
-      if (!snap.exists()) return alert("No data found.");
-
-      const blob = new Blob([JSON.stringify(snap.data(), null, 2)], {
-        type: "application/json",
-      });
-
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${auth.currentUser.displayName}_data.json`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-    } catch (err) {
-      console.error(err);
-      alert("Error downloading data.");
     }
   };
 
@@ -132,6 +110,16 @@ const LoginSecurity = () => {
     } catch (err) {
       console.error(err);
       alert("Error updating password. Please check your old password.");
+    }
+  };
+
+  // Handle Log Out and refresh the page
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Sign out the user
+      window.location.reload(); // Refresh the page
+    } catch (err) {
+      alert("Error logging out.");
     }
   };
 
@@ -270,9 +258,9 @@ const LoginSecurity = () => {
           <Button
             variant="success"
             className="w-100"
-            onClick={handleDownloadData}
+            onClick={handleLogout} // Change the button action to log out
           >
-            Download Data
+            Log Out
           </Button>
         </Col>
         <Col xs={12} md={6}>
