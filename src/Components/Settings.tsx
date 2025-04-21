@@ -1,7 +1,6 @@
 import { useState } from "react";
 import React from "react";
 import GeneralSetting from "./GeneralSetting.tsx";
-import PersonalSetting from "./PersonalSetting.tsx";
 import LogSec from "./LoginSecurity.tsx";
 
 export default function SettingsTab() {
@@ -11,10 +10,6 @@ export default function SettingsTab() {
     {
       name: "General",
       component: <GeneralSetting />,
-    },
-    {
-      name: "Personal Info",
-      component: <PersonalSetting />,
     },
     {
       name: "Login & Security",

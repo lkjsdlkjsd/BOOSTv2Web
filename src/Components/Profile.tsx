@@ -1,113 +1,242 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { supabase } from "../supabase";
-import { FaPen } from "react-icons/fa";
+import { Button, Form } from "react-bootstrap";
 import "./Profile.css";
+
+interface FormData {
+  name: string;
+  email: string;
+  sex: string;
+  birthday: string;
+  occupation: string;
+  createdAt: string;
+  profilePicture: File | null;
+  profilePictureUrl: string;
+}
 
 const Profile: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [userData, setUserData] = useState<any>({
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     sex: "",
     birthday: "",
     occupation: "",
     createdAt: "",
-    profilePictureUrl: "", 
+    profilePicture: null,
+    profilePictureUrl: "",
   });
-  const [loading, setLoading] = useState<boolean>(true);
+
+  const [loading, setLoading] = useState(true);
 
   const auth = getAuth();
   const db = getFirestore();
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
         const userRef = doc(db, "users", firebaseUser.uid);
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setUserData((prev: any) => ({
+          setFormData((prev) => ({
             ...prev,
             name: data.name || "",
             email: firebaseUser.email || "",
             sex: data.sex || "",
             birthday: data.birthday || "",
             occupation: data.occupation || "",
-            createdAt: data.createdAt ? formatDate(data.createdAt) : "", // Format the timestamp
+            createdAt: data.createdAt ? formatDate(data.createdAt) : "",
             profilePictureUrl: data.profilePicture || "",
           }));
-
-          if (data.profilePicture) {
-            const { data: profilePictureData, error } = await supabase.storage
-              .from("profile-pictures") 
-              .download(data.profilePicture);
-
-            if (error) {
-              console.error("Error fetching profile picture:", error);
-            } else {
-              const url = URL.createObjectURL(profilePictureData);
-              setUserData((prev: any) => ({ ...prev, profilePictureUrl: url }));
-            }
-          }
         }
       }
       setLoading(false);
     });
+    return () => unsubscribe();
   }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value, files } = e.target as HTMLInputElement;
+    if (files && files.length > 0) {
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const uploadProfilePicture = async (
+    file: File,
+    userId: string
+  ): Promise<string> => {
+    const fileExt = file.name.split(".").pop()?.toLowerCase();
+    if (!["jpg", "jpeg", "webp", "png"].includes(fileExt || "")) {
+      alert("Only JPG, PNG, or WebP files are allowed.");
+      throw new Error("Invalid file type");
+    }
+
+    const fileName = `${userId}.${fileExt}`;
+    const { error } = await supabase.storage
+      .from("profile-pictures")
+      .upload(fileName, file, { upsert: true });
+
+    if (error) throw error;
+
+    return supabase.storage.from("profile-pictures").getPublicUrl(fileName).data
+      .publicUrl;
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+
+    try {
+      let profilePicUrl = formData.profilePictureUrl;
+
+      if (formData.profilePicture) {
+        profilePicUrl = await uploadProfilePicture(
+          formData.profilePicture,
+          user.uid
+        );
+      }
+
+      const updateData = {
+        name: formData.name,
+        sex: formData.sex,
+        birthday: formData.birthday,
+        occupation: formData.occupation,
+        profilePicture: profilePicUrl,
+      };
+
+      await updateDoc(userRef, updateData);
+
+      alert("Profile updated successfully.");
+      setIsEditing(false);
+      setFormData((prev) => ({
+        ...prev,
+        profilePictureUrl: profilePicUrl,
+        profilePicture: null,
+      }));
+    } catch (error: any) {
+      alert("Error updating profile: " + error.message);
+    }
+  };
 
   const formatDate = (timestamp: any) => {
     const date = timestamp.toDate();
-    const options = { year: "numeric", month: "long", day: "numeric" }; 
-    return date.toLocaleDateString("en-US", options);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="profile-container">
       <div className="profile-header">
         <img
-          src={userData.profilePictureUrl || "default-avatar.png"}
+          src={
+            formData.profilePicture
+              ? URL.createObjectURL(formData.profilePicture)
+              : formData.profilePictureUrl || "default-avatar.png"
+          }
           alt="User Avatar"
           className="profile-avatar"
+          onClick={() =>
+            isEditing && document.getElementById("fileInput")?.click()
+          }
+        />
+        <Form.Control
+          type="file"
+          id="fileInput"
+          name="profilePicture"
+          accept=".jpg,.jpeg,.webp,.png"
+          onChange={handleChange}
+          style={{ display: "none" }}
         />
         <div className="profile-info">
-          <h2 className="fw-bold text-start">@{userData.name || "User"}</h2>
-          <span>
-            Joined on {userData.createdAt || "Date not available"}
-          </span>{" "}
+          <h2>@{formData.name || "User"}</h2>
+          <span>Joined on {formData.createdAt || "Date not available"}</span>
         </div>
+        <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
+          {isEditing ? "Cancel" : "Edit"}
+        </Button>
       </div>
 
-      <div className="profile-section">
-        <h3>Contact Info</h3>
-        <p> emails: {userData.email || "Email not available"}</p>
-        <p>Sex: {userData.sex || "Sex not available"}</p>
-        <p> Occupation: {userData.occupation || "Occupation not available"}</p>
-      </div>
+      <Form className="mt-4">
+        <Form.Group className="mb-3">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            disabled={!isEditing}
+            maxLength={10}
+          />
+        </Form.Group>
 
-      <div className="profile-section">
-        <h3>Bio</h3>
-        <p>{userData.birthday || "Birthday: " + "Birthday not available"}</p>
-      </div>
-      <div className="profile-section">
-        <h3>Achievements</h3>
-        <div className="achievements">
-          <div className="achievement">
-            <FaPen size={40} color="orange" />
-            <p>First of Many</p>
-          </div>
-          <div className="achievement">
-            <FaPen size={40} color="green" />
-            <p>Ten of Many</p>
-          </div>
-        </div>
-      </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Email</Form.Label>
+          <Form.Control type="email" value={formData.email} disabled />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Sex</Form.Label>
+          <Form.Select
+            name="sex"
+            value={formData.sex}
+            onChange={handleChange}
+            disabled={!isEditing}
+          >
+            <option value="Other">Other</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Birthday</Form.Label>
+          <Form.Control
+            type="date"
+            name="birthday"
+            value={formData.birthday}
+            onChange={handleChange}
+            disabled={!isEditing}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Occupation</Form.Label>
+          <Form.Select
+            name="occupation"
+            value={formData.occupation}
+            onChange={handleChange}
+            disabled={!isEditing}
+          >
+            <option>Student</option>
+            <option>Worker</option>
+            <option>Work from Home</option>
+            <option>Unemployed</option>
+          </Form.Select>
+        </Form.Group>
+
+        {isEditing && (
+          <Button variant="primary" onClick={handleSave}>
+            Save Changes
+          </Button>
+        )}
+      </Form>
     </div>
   );
 };
