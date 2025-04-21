@@ -1,226 +1,142 @@
-import React, { useRef, useState } from "react";
-import "./Whiteboard.css";
-import { IoIosArrowBack } from "react-icons/io";
-import { Save } from "lucide-react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import {
+  Excalidraw,
+  serializeAsJSON,
+  loadLibraryFromBlob,
+} from "@excalidraw/excalidraw";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import "@excalidraw/excalidraw/index.css";
+import { supabase } from "../supabase";
+import { db } from "../firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-interface BlackboardProps {
-  onBack: () => void;
-}
+const ExcalidrawEditor: React.FC = () => {
+  const excalidrawRef = useRef<ExcalidrawImperativeAPI | null>(null);
+  const [title, setTitle] = useState("");
+  const [isLoadingLibraries, setIsLoadingLibraries] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-export default function Blackboard({ onBack }: BlackboardProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [drawing, setDrawing] = useState(false);
-  const [tool, setTool] = useState<"draw" | "eraser" | "text">("draw");
-  const [color, setColor] = useState("#000000");
-  const [lineWidth, setLineWidth] = useState(5);
-  const [zoom, setZoom] = useState(1);
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
-  const [text, setText] = useState("");
-  const [drawHistory, setDrawHistory] = useState<string[]>([]);
+  useEffect(() => {
+    const loadLibraries = async () => {
+      try {
+        const libPaths = [
+          "/Draw/architecture-diagram-components.excalidrawlib",
+        ];
+        const allLibItems = await Promise.all(
+          libPaths.map(async (path) => {
+            const response = await fetch(path);
+            if (!response.ok) {
+              throw new Error(
+                `Failed to fetch library from ${path}: ${response.status} ${response.statusText}`
+              );
+            }
+            const blob = await response.blob();
+            return loadLibraryFromBlob(blob);
+          })
+        );
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    ctx.beginPath();
-    ctx.moveTo((e.clientX - rect.left) / zoom, (e.clientY - rect.top) / zoom);
-    setDrawing(true);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!drawing) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo((e.clientX - rect.left) / zoom, (e.clientY - rect.top) / zoom);
-
-    if (tool === "eraser") {
-      ctx.strokeStyle = "#ffffff"; // Eraser color (white background)
-    } else {
-      ctx.strokeStyle = color;
-    }
-
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round"; // Default to round brush
-    ctx.stroke();
-  };
-
-  const handleMouseUp = () => {
-    setDrawing(false);
-    // Save canvas state for undo functionality
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const dataUrl = canvas.toDataURL();
-      setDrawHistory((prevHistory) => [...prevHistory, dataUrl]);
-    }
-  };
-
-  const handleZoom = (direction: "in" | "out") => {
-    setZoom((prevZoom) =>
-      direction === "in" ? prevZoom * 1.2 : prevZoom / 1.2
-    );
-  };
-
-  const handleResizeCanvas = (width: number, height: number) => {
-    setCanvasSize({ width, height });
-  };
-
-  const handleClearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const combinedLibrary = allLibItems.flat();
+        excalidrawRef.current?.updateLibrary({
+          libraryItems: combinedLibrary,
+          merge: true,
+        });
+      } catch (err) {
+        console.error("Failed to load one or more libraries:", err);
+        setErrorMessage("Error loading diagram libraries.");
+      } finally {
+        setIsLoadingLibraries(false);
       }
+    };
+
+    loadLibraries();
+  }, []);
+
+  const handleSaveTask = useCallback(async () => {
+    const api = excalidrawRef.current;
+    if (!api) return;
+
+    const elements = api.getSceneElements();
+    const appState = api.getAppState();
+    const files = api.getFiles();
+
+    const json = serializeAsJSON(elements, appState, files, "local");
+    const blob = new Blob([json], { type: "application/json" });
+
+    const safeTitle = title.trim() || "untitled";
+    const fileName = `${safeTitle
+      .replace(/\s+/g, "-")
+      .toLowerCase()}-${Date.now()}.excalidraw`;
+
+    const { data, error } = await supabase.storage
+      .from("whiteboards")
+      .upload(fileName, blob, {
+        contentType: "application/json",
+        upsert: false,
+      });
+
+    if (error) {
+      console.error("Supabase upload failed:", error.message);
+      setErrorMessage("Upload failed. Please try again.");
+      return;
     }
-  };
 
-  const handleUndo = () => {
-    setDrawHistory((prevHistory) => {
-      if (prevHistory.length > 1) {
-        prevHistory.pop();
-        const canvas = canvasRef.current;
-        if (canvas) {
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            const lastState = prevHistory[prevHistory.length - 1];
-            const img = new Image();
-            img.src = lastState;
-            img.onload = () => {
-              ctx.clearRect(0, 0, canvas.width, canvas.height);
-              ctx.drawImage(img, 0, 0);
-            };
-          }
-        }
-      }
-      return [...prevHistory];
-    });
-  };
+    const { data: publicUrlData } = supabase.storage
+      .from("whiteboards")
+      .getPublicUrl(fileName);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-  };
+    const downloadURL = publicUrlData?.publicUrl;
 
-  const handleAddText = () => {
-    if (text && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.font = "30px Arial";
-        ctx.fillStyle = color;
-        ctx.fillText(text, 50, 50); // Example text placement
-      }
+    try {
+      await addDoc(collection(db, "whiteboards"), {
+        title: safeTitle,
+        url: downloadURL,
+        fileName,
+        createdAt: serverTimestamp(),
+      });
+      alert("Whiteboard saved to Supabase and Firestore!");
+      setTitle("");
+      setErrorMessage("");
+    } catch (err) {
+      console.error("Failed to save metadata to Firestore:", err);
+      setErrorMessage("Upload succeeded, but saving to Firestore failed.");
     }
-  };
-
-  const handleSave = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL();
-      link.download = "whiteboard-drawing.png";
-      link.click();
-    }
-  };
+  }, [title]);
 
   return (
-    <div className="blackboard-container">
-      <div className="header-container d-flex align-items-center justify-content-between p-3">
-        <IoIosArrowBack
-          size={30}
-          onClick={onBack}
-          style={{ cursor: "pointer" }}
-        />
-        <h2 className="text-center flex-grow-1 m-0">Whiteboard</h2>
-        <Save size={30} style={{ cursor: "pointer" }} onClick={handleSave} />
-      </div>
-
-      <div className="toolbar">
-        <button onClick={() => setTool("draw")}>✏️ Draw</button>
-        <button onClick={() => setTool("eraser")}>🩹 Eraser</button>
-        <button onClick={() => setTool("text")}>🔤 Text</button>
+    <div className="d-flex flex-column vh-100">
+      <div className="bg-light border-bottom p-2 d-flex gap-2 align-items-center">
         <input
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          title="Choose Color"
+          className="form-control"
+          placeholder="Whiteboard Title (optional)"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={isLoadingLibraries}
         />
-        <label>
-          Line Width:
-          <input
-            type="number"
-            min="1"
-            max="20"
-            value={lineWidth}
-            onChange={(e) => setLineWidth(Number(e.target.value))}
-            style={{ width: "60px" }}
-            title="Line Width"
-          />
-        </label>
-        <button onClick={() => handleZoom("in")}>🔍 Zoom In</button>
-        <button onClick={() => handleZoom("out")}>🔍 Zoom Out</button>
-        <button onClick={handleClearCanvas}>🧹 Clear</button>
-        <button onClick={handleUndo}>↩️ Undo</button>
-        {tool === "text" && (
-          <>
-            <input
-              type="text"
-              value={text}
-              onChange={handleTextChange}
-              placeholder="Enter text"
-            />
-            <button onClick={handleAddText}>Add Text</button>
-          </>
-        )}
-        <label>
-          Width:
-          <input
-            type="number"
-            value={canvasSize.width}
-            onChange={(e) =>
-              handleResizeCanvas(Number(e.target.value), canvasSize.height)
-            }
-            style={{ width: "60px" }}
-          />
-        </label>
-        <label>
-          Height:
-          <input
-            type="number"
-            value={canvasSize.height}
-            onChange={(e) =>
-              handleResizeCanvas(canvasSize.width, Number(e.target.value))
-            }
-            style={{ width: "60px" }}
-          />
-        </label>
+        <button
+          className="btn btn-primary"
+          onClick={handleSaveTask}
+          disabled={isLoadingLibraries}
+        >
+          Save Task
+        </button>
       </div>
 
-      <div className="canvas-container">
-        <canvas
-          ref={canvasRef}
-          width={canvasSize.width}
-          height={canvasSize.height}
-          style={{
-            transform: `scale(${zoom})`,
-            transformOrigin: "0 0",
-            backgroundColor: "#ffffff",
-            cursor:
-              tool === "draw" || tool === "eraser" ? "crosshair" : "default",
+      {errorMessage && (
+        <div className="alert alert-danger m-2 p-2">{errorMessage}</div>
+      )}
+
+      <div className="flex-grow-1 position-relative">
+        <Excalidraw
+          theme="light"
+          UIOptions={{
+            canvasActions: {
+              saveToActiveFile: false,
+            },
           }}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
         />
       </div>
     </div>
   );
-}
+};
+
+export default ExcalidrawEditor;
