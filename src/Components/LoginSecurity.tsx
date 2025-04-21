@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Form, Row, Col, Container, Alert } from "react-bootstrap";
+import { Button, Form, Row, Col, Container } from "react-bootstrap";
 import {
   signInWithPopup,
   deleteUser,
@@ -11,6 +11,8 @@ import {
 import { auth, facebookProvider, googleProvider } from "../firebase";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { User } from "firebase/auth";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons from react-icons
+import "./LoginSecurity.css";
 
 const LoginSecurity = () => {
   const [showInput, setShowInput] = useState(false);
@@ -19,6 +21,8 @@ const LoginSecurity = () => {
   const [newPassword, setNewPassword] = useState<string>("");
   const [oldPassword, setOldPassword] = useState<string>("");
   const [canUpdatePassword, setCanUpdatePassword] = useState<boolean>(false);
+  const [showOldPassword, setShowOldPassword] = useState<boolean>(false); // State to toggle old password visibility
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false); // State to toggle new password visibility
   const db = getFirestore();
 
   // Fetch user data on initial render
@@ -179,11 +183,20 @@ const LoginSecurity = () => {
         <Col sm="auto">
           <Form.Control
             size="sm"
-            type="password"
+            type={showOldPassword ? "text" : "password"}
             placeholder="Enter old password"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
           />
+        </Col>
+        <Col sm="auto">
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => setShowOldPassword(!showOldPassword)}
+          >
+            {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+          </Button>
         </Col>
       </Row>
 
@@ -194,11 +207,20 @@ const LoginSecurity = () => {
         <Col sm="auto">
           <Form.Control
             size="sm"
-            type="password"
+            type={showNewPassword ? "text" : "password"}
             placeholder="Enter new password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
+        </Col>
+        <Col sm="auto">
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => setShowNewPassword(!showNewPassword)}
+          >
+            {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+          </Button>
         </Col>
       </Row>
 
