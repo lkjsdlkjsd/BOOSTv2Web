@@ -40,6 +40,8 @@ interface Task {
 const FcTodoList: React.FC = () => {
   const [_showModal, setShowModal] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [user, setUser] = useState<firebase.User | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState<Task>({
@@ -101,12 +103,15 @@ const FcTodoList: React.FC = () => {
     return num.toString().padStart(2, "0");
   };
 
-  const _handleShow = (title: string, description: string) => {
-    setShowModal(true);
-    setModalContent({ title, description });
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setShowChecklistModal(true);
   };
 
-  const _handleClose = () => setShowModal(false);
+  const handleChecklistModalClose = () => {
+    setShowChecklistModal(false);
+    setSelectedTask(null);
+  };
 
   const handleAddTaskShow = () => setShowAddTaskModal(true);
   const handleAddTaskClose = () => {
@@ -194,41 +199,6 @@ const FcTodoList: React.FC = () => {
     }
   };
 
-  const handleTaskComplete = async (task: Task) => {
-    setError(null);
-    if (user && task.id && task.createdAt) {
-      try {
-        const now = new Date();
-        const createdAt = task.createdAt.toDate();
-        const diff = now.getTime() - createdAt.getTime();
-
-        const totalSeconds = Math.floor(diff / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        const timeTaken = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-
-        const updatedTask = {
-          ...task,
-          completed: true,
-          status: "completed",
-          completedTime: timeTaken,
-        };
-
-        await updateDoc(
-          doc(db, "users", user.uid, "todolist", task.id),
-          updatedTask
-        );
-        setTasks((prevTasks) =>
-          prevTasks.map((t) => (t.id === task.id ? updatedTask : t))
-        ); //Update locally
-      } catch (error) {
-        setError("Error completing task. Please try again later.");
-        console.error("Error completing task:", error);
-      }
-    }
-  };
-
   const formatDate = (date: Date | null | Timestamp): string => {
     if (!date) return "";
     const dateObj = date instanceof Timestamp ? date.toDate() : date;
@@ -253,14 +223,21 @@ const FcTodoList: React.FC = () => {
   };
 
   const renderTaskCard = (task: Task) => (
-    <div className="pb-3" key={task.id}>
+    <div
+      className="pb-3"
+      key={task.id}
+      onClick={() => handleTaskClick(task)}
+      style={{ cursor: "pointer" }}
+    >
       <div className="card p-3" style={{ width: "22rem" }}>
         <div className="d-flex align-items-center">
           <span className="badge bg-success mr-auto ">{task.timeLeft}</span>
-          {/* Edit functionality needs to be implemented */}
           <FaEdit size={35} style={{ cursor: "pointer" }} className="p-2" />
           <MdDelete
-            onClick={() => handleDeleteTask(task.id)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the modal
+              handleDeleteTask(task.id);
+            }}
             size={22}
             style={{ cursor: "pointer" }}
           />
@@ -277,22 +254,8 @@ const FcTodoList: React.FC = () => {
               {formatDate(task.dueDate)}
             </span>
           </div>
-          <span>
-            {task.status === "completed"
-              ? `Time Taken: ${task.completedTime ?? "N/A"}`
-              : ""}
-          </span>
         </div>
       </div>
-
-      {task.status !== "completed" && (
-        <FormCheck
-          type="checkbox"
-          label="Complete"
-          checked={task.completed}
-          onChange={() => handleTaskComplete(task)}
-        />
-      )}
     </div>
   );
 
@@ -478,6 +441,43 @@ const FcTodoList: React.FC = () => {
           </Button>
           <Button variant="primary" onClick={handleAddTask}>
             Add Task
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={showChecklistModal}
+        onHide={handleChecklistModalClose}
+        centered
+        className="checklist-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedTask?.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedTask?.checklist.length ? (
+            selectedTask.checklist.map((item, index) => (
+              <FormCheck
+                key={index}
+                type="checkbox"
+                label={item.text}
+                checked={item.checked}
+                onChange={() => {
+                  const updatedChecklist = [...(selectedTask?.checklist || [])];
+                  updatedChecklist[index].checked = !updatedChecklist[index].checked;
+                  setSelectedTask((prev) =>
+                    prev ? { ...prev, checklist: updatedChecklist } : null
+                  );
+                }}
+              />
+            ))
+          ) : (
+            <p>No checklist items available.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleChecklistModalClose}>
+            Close
           </Button>
         </Modal.Footer>
       </Modal>
