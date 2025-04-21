@@ -1,0 +1,148 @@
+/* Fullscreen layout */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Container styling */
+#pricing-container {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    animation: floatUp 1s ease-out;
+}
+
+/* Header styling */
+#pricing-header {
+    color: #2e7d32;
+    /* Cute green */
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Free Plan Styling */
+#pricing-free-plan {
+    border-radius: 1.5rem;
+    border: 2px solid #c8e6c9;
+    background: #f9fff9;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#pricing-free-plan:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(46, 125, 50, 0.2);
+}
+
+#pricing-free-title {
+    color: #388e3c;
+}
+
+#pricing-free-plan ul {
+    padding-left: 1.5rem;
+    list-style-type: "🍃 ";
+}
+
+#pricing-free-plan li {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4e944f;
+}
+
+/* Monthly Plan Styling */
+#pricing-monthly-premium {
+    border-radius: 1.5rem;
+    border: 2px solid #c8e6c9;
+    background: #f9fff9;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#pricing-monthly-premium:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(46, 125, 50, 0.2);
+}
+
+#pricing-monthly-title {
+    color: #388e3c;
+}
+
+#pricing-monthly-premium ul {
+    padding-left: 1.5rem;
+    list-style-type: "🍃 ";
+}
+
+#pricing-monthly-premium li {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4e944f;
+}
+
+/* Annual Plan Styling */
+#pricing-annual-premium {
+    border-radius: 1.5rem;
+    border: 2px solid #c8e6c9;
+    background: #f9fff9;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#pricing-annual-premium:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(46, 125, 50, 0.2);
+}
+
+#pricing-annual-title {
+    color: #388e3c;
+}
+
+#pricing-annual-premium ul {
+    padding-left: 1.5rem;
+    list-style-type: "🍃 ";
+}
+
+#pricing-annual-premium li {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #4e944f;
+}
+
+/* Button Styling */
+#pricing-button {
+    background-color: #66bb6a;
+    border-color: #66bb6a;
+    border-radius: 2rem;
+    font-weight: bold;
+    width: 100%;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#pricing-button:hover {
+    background-color: #81c784;
+    border-color: #81c784;
+}
+
+/* Animation */
+@keyframes floatUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #pricing-container {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+
+    #pricing-free-plan,
+    #pricing-monthly-premium,
+    #pricing-annual-premium {
+        margin: 0 1rem;
+    }
+}
