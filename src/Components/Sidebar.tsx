@@ -66,8 +66,9 @@ export default function Sidebar() {
       name: "Settings",
       icon: <Settings size={20} />,
       component: <SettingsTabs />,
-    }, {
-      name: "Colaboration",
+    },
+    {
+      name: "Premium Plan",
       icon: <AiOutlineTeam size={20} />,
       component: <ColabTab />,
     },
@@ -131,7 +132,7 @@ export default function Sidebar() {
               className={`menu-item ${activeTab === item.name ? "active" : ""}`}
               onClick={() => {
                 setActiveTab(item.name);
-                setShowProfile(false); 
+                setShowProfile(false);
               }}
             >
               {item.icon}
@@ -146,8 +147,8 @@ export default function Sidebar() {
             alt="User Avatar"
             className="profile-avatar"
             onClick={() => {
-              setShowProfile(true); 
-              setActiveTab(""); 
+              setShowProfile(true);
+              setActiveTab("");
             }}
             id="user-avatar"
           />

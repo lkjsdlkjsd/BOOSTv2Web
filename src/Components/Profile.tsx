@@ -168,7 +168,10 @@ const Profile: React.FC = () => {
           <h2>@{formData.name || "User"}</h2>
           <span>Joined on {formData.createdAt || "Date not available"}</span>
         </div>
-        <Button variant="secondary" onClick={() => setIsEditing(!isEditing)}>
+        <Button
+          variant="secondary text-light	"
+          onClick={() => setIsEditing(!isEditing)}
+        >
           {isEditing ? "Cancel" : "Edit"}
         </Button>
       </div>
