@@ -26,9 +26,7 @@ const ExcalidrawEditor: React.FC = () => {
           libPaths.map(async (path) => {
             const response = await fetch(path);
             if (!response.ok) {
-              throw new Error(
-                `Failed to fetch library from ${path}: ${response.status} ${response.statusText}`
-              );
+              throw new Error(`Failed to fetch library from ${path}`);
             }
             const blob = await response.blob();
             return loadLibraryFromBlob(blob);
@@ -41,7 +39,7 @@ const ExcalidrawEditor: React.FC = () => {
           merge: true,
         });
       } catch (err) {
-        console.error("Failed to load one or more libraries:", err);
+        console.error("Failed to load libraries:", err);
         setErrorMessage("Error loading diagram libraries.");
       } finally {
         setIsLoadingLibraries(false);
@@ -67,7 +65,7 @@ const ExcalidrawEditor: React.FC = () => {
       .replace(/\s+/g, "-")
       .toLowerCase()}-${Date.now()}.excalidraw`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("whiteboards")
       .upload(fileName, blob, {
         contentType: "application/json",
@@ -93,12 +91,12 @@ const ExcalidrawEditor: React.FC = () => {
         fileName,
         createdAt: serverTimestamp(),
       });
-      alert("Whiteboard saved to Supabase and Firestore!");
+      alert("Whiteboard saved!");
       setTitle("");
       setErrorMessage("");
     } catch (err) {
-      console.error("Failed to save metadata to Firestore:", err);
-      setErrorMessage("Upload succeeded, but saving to Firestore failed.");
+      console.error("Firestore error:", err);
+      setErrorMessage("Upload succeeded but saving to Firestore failed.");
     }
   }, [title]);
 
