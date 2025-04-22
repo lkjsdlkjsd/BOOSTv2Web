@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { RxExit } from "react-icons/rx";
 import "./Flashcard-QnA.css";
-import { getFirestore, doc, updateDoc, getDoc, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  updateDoc,
+  getDoc,
+  collection,
+  addDoc,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { format } from "date-fns";
 
@@ -11,14 +18,18 @@ interface FlashcardQnAProps {
   onExit: () => void;
 }
 
-export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAProps) {
+export default function FlashcardQnA({
+  deckTitle,
+  cards,
+  onExit,
+}: FlashcardQnAProps) {
   const [remainingQuestions, setRemainingQuestions] = useState(cards);
   const [currentQuestion, setCurrentQuestion] = useState<{
     id: string;
     question: string;
     answer: string;
   } | null>(null);
-  const [choices, setChoices] = useState<string[]>([]); 
+  const [choices, setChoices] = useState<string[]>([]);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
@@ -35,7 +46,9 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
         .sort(() => 0.5 - Math.random())
         .slice(0, 3)
         .map((card) => card.answer);
-      const allChoices = [...incorrectAnswers, question.answer].sort(() => 0.5 - Math.random());
+      const allChoices = [...incorrectAnswers, question.answer].sort(
+        () => 0.5 - Math.random()
+      );
       setChoices(allChoices);
 
       setTimeLeft(15);
@@ -88,18 +101,20 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
 
     try {
       let xpEarned = 0;
-    if (score === 0) {
-      xpEarned = 0; 
-    } else if (score === cards.length) {
-      xpEarned = 15; 
-    } else if (score / cards.length >= 0.5) {
-      xpEarned = 10; 
-    } else {
-      xpEarned = 5; 
-    }
+      if (score === 0) {
+        xpEarned = 0;
+      } else if (score === cards.length) {
+        xpEarned = 15;
+      } else if (score / cards.length >= 0.5) {
+        xpEarned = 10;
+      } else {
+        xpEarned = 5;
+      }
 
       const userDocSnapshot = await getDoc(userDocRef);
-      const currentXP = userDocSnapshot.exists() ? userDocSnapshot.data()?.exp || 0 : 0;
+      const currentXP = userDocSnapshot.exists()
+        ? userDocSnapshot.data()?.exp || 0
+        : 0;
       const updatedXP = currentXP + xpEarned;
       await updateDoc(userDocRef, { exp: updatedXP });
       const xpHistoryRef = collection(db, "users", user.uid, "xpHistory");
@@ -132,23 +147,23 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
   if (quizCompleted) {
     const xpEarned =
       score === 0
-      ? 0
-      : score === cards.length
-      ? 15
-      : score / cards.length >= 0.5
-      ? 10
-      : 5;
+        ? 0
+        : score === cards.length
+        ? 15
+        : score / cards.length >= 0.5
+        ? 10
+        : 5;
 
-      let message = "";
-      if (score === 0) {
-        message = "Get better next time, but at least you tried!";
-      } else if (score === cards.length) {
-        message = "You got a perfect score! You are amazing!";
-      } else {
-        message = "You did great!";
-      }
+    let message = "";
+    if (score === 0) {
+      message = "Get better next time, but at least you tried!";
+    } else if (score === cards.length) {
+      message = "You got a perfect score! You are amazing!";
+    } else {
+      message = "You did great!";
+    }
 
-      return (
+    return (
       <div className="container mt-4 text-center">
         <div id="bg-1" className="d-flex flex-wrap align-items-center">
           <span className="ms-4 me-2 text-white">Deck: {deckTitle}</span>
@@ -158,7 +173,7 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
           <p>
             Your Score: {score}/{cards.length}
           </p>
-          <p>XP Earned: {xpEarned}</p> 
+          <p>XP Earned: {xpEarned}</p>
           <p className="fw-bold">{message}</p>
         </div>
         <button className="btn btn-warning text-white" onClick={onExit}>
@@ -180,7 +195,12 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
     <React.Fragment>
       <div className="container mt-4">
         <div className="d-flex justify-content-between align-items-center">
-          <RxExit size="30" className="m-2 me-4" id="exit-btn" onClick={onExit} />
+          <RxExit
+            size="30"
+            className="m-2 me-4"
+            id="exit-btn"
+            onClick={onExit}
+          />
         </div>
         <div id="bg-1" className="d-flex flex-wrap align-items-center">
           <span className="ms-4 me-2 text-white">Deck: {deckTitle}</span>
@@ -196,7 +216,10 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
           <div id="question-card" className="card mt-4 text-center p-3">
             {currentQuestion.question}
           </div>
-          <div id="choices-container" className="row justify-content-center gap-3 mt-4">
+          <div
+            id="choices-container"
+            className="row justify-content-center gap-3 mt-4"
+          >
             {choices.map((choice, index) => (
               <button
                 key={index}
@@ -211,7 +234,7 @@ export default function FlashcardQnA({ deckTitle, cards, onExit }: FlashcardQnAP
                 }`}
                 id="choice-btn"
                 onClick={() => handleChoiceSelection(choice)}
-                disabled={!!selectedChoice} 
+                disabled={!!selectedChoice}
               >
                 {choice}
               </button>
