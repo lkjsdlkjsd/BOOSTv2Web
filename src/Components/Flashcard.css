@@ -90,9 +90,6 @@
   max-height: 4.5em;
 }
 
-#card-bg {
-  background-color: white;
-}
 
 #flashcard-card {
   min-width: 200px;
@@ -200,7 +197,7 @@
 }
 
 .btn-outline-warning:hover {
-  color: white; 
-  background-color: #ffc107; 
-  border-color: #ffc107; 
+  color: white;
+  background-color: #ffc107;
+  border-color: #ffc107;
 }

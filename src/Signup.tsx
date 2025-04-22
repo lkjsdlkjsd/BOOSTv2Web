@@ -10,10 +10,10 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import TermsPolicy from "./Components/TermsPolicy";
 import "bootstrap/dist/css/bootstrap.css";
-import "/src/Signup.css";
+import "./Signup.css";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 interface UserInfo {
   name: string;
@@ -172,7 +172,7 @@ const Signup: React.FC = () => {
   return (
     <>
       <motion.div
-        className="d-flex justify-content-center h-100"
+        className="d-flex justify-content-center"
         id="bg"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}

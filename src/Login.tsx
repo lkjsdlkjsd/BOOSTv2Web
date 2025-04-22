@@ -50,7 +50,7 @@ function Login() {
       const userData = await fetchUserData(user.uid);
       if (userData) {
         alert(`Login Successful! Welcome, ${userData.name || "User"}!`);
-        window.location.href = "dashboard.html";
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       setError("User not found or incorrect credentials.");
@@ -67,7 +67,7 @@ function Login() {
         alert(
           `Google Sign-in Successful! Welcome, ${userData.name || "User"}!`
         );
-        window.location.href = "dashboard.html";
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       setError("Google Sign-In failed. Please try again.");

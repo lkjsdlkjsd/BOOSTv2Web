@@ -29,15 +29,7 @@
       border: 1px solid #F1F1F3;
     }
 
-    spans,
-    h1,
-    h2,
-    h4,
-    h5,
-    h6 {
-      font-family: "Be Vietnam Pro", serif;
-      font-style: normal;
-    }
+
 
     #arr-btn {
       align-self: flex-end;
@@ -133,4 +125,8 @@
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
       }
 
+    }
+
+    #boost-tagline {
+      max-width: 1000px;
     }

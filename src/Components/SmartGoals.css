@@ -173,17 +173,12 @@
 }
 
 .btn {
-  background-color: #10b981;
   color: white;
   border: none;
   border-radius: 8px;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  font-weight: bold;
-}
 
-.btn:hover {
-  background-color: #059669;
 }
 
 input[type="text"],
@@ -197,7 +192,6 @@ input[type="color"] {
 }
 
 label {
-  font-weight: bold;
   color: #374151;
   margin-bottom: 0.5rem;
   display: block;
