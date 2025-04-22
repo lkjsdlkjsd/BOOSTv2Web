@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "./Sidebar.css";
-import { AiOutlineTeam } from "react-icons/ai";
+import { FaCrown } from "react-icons/fa";
 import { BsCardText } from "react-icons/bs";
 import { IoRibbon } from "react-icons/io5";
 import { LayoutGrid, ListCheck, Timer, Brain, Settings } from "lucide-react";
@@ -69,7 +69,7 @@ export default function Sidebar() {
     },
     {
       name: "Premium Plan",
-      icon: <AiOutlineTeam size={20} />,
+      icon: <FaCrown size={20} />,
       component: <ColabTab />,
     },
   ];
