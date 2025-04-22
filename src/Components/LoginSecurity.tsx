@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Form, Row, Col, Container } from "react-bootstrap";
 import {
   signInWithPopup,
@@ -10,10 +10,9 @@ import {
   signOut, // Import signOut from Firebase Authentication
 } from "firebase/auth";
 import { auth, facebookProvider, googleProvider } from "../firebase";
-import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons from react-icons
-import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import "./LoginSecurity.css";
 
 const LoginSecurity = () => {
@@ -26,7 +25,6 @@ const LoginSecurity = () => {
   const [showOldPassword, setShowOldPassword] = useState<boolean>(false); // State to toggle old password visibility
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false); // State to toggle new password visibility
   const db = getFirestore();
-  const navigate = useNavigate(); // Initialize the navigate function
 
   // Fetch user data on initial render
   useEffect(() => {

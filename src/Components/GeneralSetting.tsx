@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 
@@ -48,7 +48,7 @@ export default function General() {
           const URL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
           fetch(URL)
             .then((res) => res.json())
-            .then((data) => {
+            .then((_data) => {
               updateDateTime();
             })
             .catch((err) => console.error("Error fetching timezone:", err));

@@ -247,11 +247,6 @@ export default function HomePage() {
     alert("Boost activated!");
   };
 
-  const completionPercentage =
-    completedCount + inProgressCount > 0
-      ? Math.round((completedCount / (completedCount + inProgressCount)) * 100)
-      : 0;
-
   const pieChartData = {
     labels: ["Completed", "In Progress"],
     datasets: [

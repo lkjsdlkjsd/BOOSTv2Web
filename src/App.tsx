@@ -5,6 +5,7 @@ import Content from "./Components/Contentland";
 import Footer from "./Components/Footer.tsx";
 import SignUp from "./Signup";
 import Login from "./Login";
+import Dashboard from "./Dashboard.tsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Content />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/Dashboard" element={<Dashboard />} />
         </Routes>
         <Footer />
       </div>

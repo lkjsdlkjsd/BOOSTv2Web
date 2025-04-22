@@ -13,7 +13,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "/src/Signup.css";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 interface UserInfo {
   name: string;

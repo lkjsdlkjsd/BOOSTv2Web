@@ -1,6 +1,5 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import GeneralSetting from "./GeneralSetting.tsx";
-import PersonalSetting from "./PersonalSetting.tsx";
 import LogSec from "./LoginSecurity.tsx";
 
 export default function SettingsTab() {
@@ -30,7 +29,6 @@ export default function SettingsTab() {
       <div className="mt-4">
         <Routes>
           <Route path="general" element={<GeneralSetting />} />
-          <Route path="personal" element={<PersonalSetting />} />
           <Route path="login-security" element={<LogSec />} />
         </Routes>
       </div>

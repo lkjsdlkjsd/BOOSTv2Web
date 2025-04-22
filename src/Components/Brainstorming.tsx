@@ -7,9 +7,6 @@ import "./Brainstorming.css";
 
 export default function Brainstorming() {
   const [activeComponent, setActiveComponent] = useState("brainstorming");
-  
-
-  
 
   return (
     <React.Fragment>
@@ -56,10 +53,9 @@ export default function Brainstorming() {
               <span className="pe-3">Date Created</span>
             </div>
           </div>
-
         </>
       ) : activeComponent === "mindmap" ? (
-        <Mindmap onBack={() => setActiveComponent("brainstorming")} />
+        <Mindmap />
       ) : activeComponent === "smartgoals" ? (
         <SmartGoals onBack={() => setActiveComponent("brainstorming")} />
       ) : (

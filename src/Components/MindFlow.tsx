@@ -18,11 +18,19 @@ interface MindFlowProps {
   onBack: () => void;
 }
 
-const MessageModal = ({ message, onClose }: { message: string; onClose: () => void }) => (
+const MessageModal = ({
+  message,
+  onClose,
+}: {
+  message: string;
+  onClose: () => void;
+}) => (
   <div className="message-modal">
     <div className="message-modal-content">
       <p>{message}</p>
-      <button onClick={onClose} className="btn">Close</button>
+      <button onClick={onClose} className="btn">
+        Close
+      </button>
     </div>
   </div>
 );
@@ -53,8 +61,8 @@ export default function MindFlow({ onBack }: MindFlowProps) {
     [setEdges]
   );
 
-  const isMobile = window.innerWidth <= 768; 
-  const connectorStrokeWidth = isMobile ? 40 : 20; 
+  const isMobile = window.innerWidth <= 768;
+  const connectorStrokeWidth = isMobile ? 40 : 20;
 
   const addNode = () => {
     setNewNodeData({
@@ -94,7 +102,12 @@ export default function MindFlow({ onBack }: MindFlowProps) {
   const deleteNode = () => {
     if (selectedNodeId) {
       setNodes((nds) => nds.filter((node) => node.id !== selectedNodeId));
-      setEdges((eds) => eds.filter((edge) => edge.source !== selectedNodeId && edge.target !== selectedNodeId));
+      setEdges((eds) =>
+        eds.filter(
+          (edge) =>
+            edge.source !== selectedNodeId && edge.target !== selectedNodeId
+        )
+      );
       setSelectedNodeId(null);
     } else {
       setMessage("Please select a node to delete.");
@@ -153,12 +166,12 @@ export default function MindFlow({ onBack }: MindFlowProps) {
     setIsEditModalOpen(false);
   };
 
-  const onNodeClick = (event: React.MouseEvent, node: Node) => {
+  const onNodeClick = (_event: React.MouseEvent, node: Node) => {
     setSelectedNodeId(node.id);
     setSelectedEdgeId(null);
   };
 
-  const onEdgeClick = (event: React.MouseEvent, edge: Edge) => {
+  const onEdgeClick = (_event: React.MouseEvent, edge: Edge) => {
     setSelectedEdgeId(edge.id);
     setSelectedNodeId(null);
   };
@@ -173,7 +186,7 @@ export default function MindFlow({ onBack }: MindFlowProps) {
           style={{ cursor: "pointer" }}
         />
         <h2 className="text-center flex-grow-1 m-0">Mind Flow</h2>
-        <Save size={30} style={{ cursor: "pointer" }}  />
+        <Save size={30} style={{ cursor: "pointer" }} />
       </div>
 
       <div id="flow">
@@ -195,12 +208,22 @@ export default function MindFlow({ onBack }: MindFlowProps) {
         </ReactFlow>
       </div>
       <div
-        className={`add-node-container ${isAddModalOpen || isEditModalOpen ? "hidden" : ""}`}
+        className={`add-node-container ${
+          isAddModalOpen || isEditModalOpen ? "hidden" : ""
+        }`}
       >
-        <button onClick={addNode} className="btn">Add Node</button>
-        <button onClick={deleteNode} className="btn">Delete Node</button>
-        <button onClick={editNode} className="btn">Edit Node</button>
-        <button onClick={deleteEdge} className="btn">Delete Line</button>
+        <button onClick={addNode} className="btn">
+          Add Node
+        </button>
+        <button onClick={deleteNode} className="btn">
+          Delete Node
+        </button>
+        <button onClick={editNode} className="btn">
+          Edit Node
+        </button>
+        <button onClick={deleteEdge} className="btn">
+          Delete Line
+        </button>
       </div>
 
       {isAddModalOpen && (
@@ -211,7 +234,9 @@ export default function MindFlow({ onBack }: MindFlowProps) {
             <input
               type="text"
               value={newNodeData.label}
-              onChange={(e) => setNewNodeData({ ...newNodeData, label: e.target.value })}
+              onChange={(e) =>
+                setNewNodeData({ ...newNodeData, label: e.target.value })
+              }
             />
           </label>
           <label>
@@ -219,7 +244,9 @@ export default function MindFlow({ onBack }: MindFlowProps) {
             <input
               type="color"
               value={newNodeData.color}
-              onChange={(e) => setNewNodeData({ ...newNodeData, color: e.target.value })}
+              onChange={(e) =>
+                setNewNodeData({ ...newNodeData, color: e.target.value })
+              }
             />
           </label>
           <label>
@@ -227,11 +254,17 @@ export default function MindFlow({ onBack }: MindFlowProps) {
             <input
               type="color"
               value={newNodeData.textColor}
-              onChange={(e) => setNewNodeData({ ...newNodeData, textColor: e.target.value })}
+              onChange={(e) =>
+                setNewNodeData({ ...newNodeData, textColor: e.target.value })
+              }
             />
           </label>
-          <button onClick={handleAddSubmit} className="btn">Add</button>
-          <button onClick={() => setIsAddModalOpen(false)} className="btn">Cancel</button>
+          <button onClick={handleAddSubmit} className="btn">
+            Add
+          </button>
+          <button onClick={() => setIsAddModalOpen(false)} className="btn">
+            Cancel
+          </button>
         </div>
       )}
 
@@ -243,7 +276,9 @@ export default function MindFlow({ onBack }: MindFlowProps) {
             <input
               type="text"
               value={editNodeData.label}
-              onChange={(e) => setEditNodeData({ ...editNodeData, label: e.target.value })}
+              onChange={(e) =>
+                setEditNodeData({ ...editNodeData, label: e.target.value })
+              }
             />
           </label>
           <label>
@@ -251,7 +286,9 @@ export default function MindFlow({ onBack }: MindFlowProps) {
             <input
               type="color"
               value={editNodeData.color}
-              onChange={(e) => setEditNodeData({ ...editNodeData, color: e.target.value })}
+              onChange={(e) =>
+                setEditNodeData({ ...editNodeData, color: e.target.value })
+              }
             />
           </label>
           <label>
@@ -259,15 +296,23 @@ export default function MindFlow({ onBack }: MindFlowProps) {
             <input
               type="color"
               value={editNodeData.textColor}
-              onChange={(e) => setEditNodeData({ ...editNodeData, textColor: e.target.value })}
+              onChange={(e) =>
+                setEditNodeData({ ...editNodeData, textColor: e.target.value })
+              }
             />
           </label>
-          <button onClick={handleEditSubmit} className="btn">Save</button>
-          <button onClick={() => setIsEditModalOpen(false)} className="btn">Cancel</button>
+          <button onClick={handleEditSubmit} className="btn">
+            Save
+          </button>
+          <button onClick={() => setIsEditModalOpen(false)} className="btn">
+            Cancel
+          </button>
         </div>
       )}
 
-      {message && <MessageModal message={message} onClose={() => setMessage(null)} />}
+      {message && (
+        <MessageModal message={message} onClose={() => setMessage(null)} />
+      )}
     </React.Fragment>
   );
 }

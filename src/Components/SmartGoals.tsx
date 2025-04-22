@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./SmartGoals.css";
 import { FaPlus } from "react-icons/fa6";
 import { FaEdit } from "react-icons/fa";

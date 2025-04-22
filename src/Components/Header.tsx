@@ -1,8 +1,6 @@
 import React from "react";
 import "./Header.css";
 
-import vectorImage from "/src/assets/Vector(Stroke).svg";
-
 function Header() {
   return (
     <React.Fragment>
