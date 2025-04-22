@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, FormCheck } from "react-bootstrap";
 import "./ToDoList.css";
 import { db, auth } from "../firebase";
-import { Timestamp, serverTimestamp } from "firebase/firestore";
+import { Timestamp, serverTimestamp, FieldValue } from "firebase/firestore";
 import {
   doc,
   setDoc,
@@ -33,7 +33,7 @@ interface Task {
   priority: string;
   status: string;
   userId: string;
-  createdAt: Timestamp | null;
+  createdAt: Timestamp | FieldValue | null;
   completedTime: string | null;
 }
 
@@ -42,8 +42,10 @@ const FcTodoList: React.FC = () => {
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [user, setUser] = useState<firebase.User | null>(null);
+  const [user, setUser] = useState<import("firebase/auth").User | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [showEditTaskModal, setShowEditTaskModal] = useState(false);
+  const [editTask, setEditTask] = useState<Task | null>(null);
   const [newTask, setNewTask] = useState<Task>({
     id: "",
     title: "",
@@ -103,6 +105,16 @@ const FcTodoList: React.FC = () => {
     return num.toString().padStart(2, "0");
   };
 
+  const handleEditTaskClick = (task: Task) => {
+    setEditTask(task);
+    setShowEditTaskModal(true);
+  };
+  
+  const handleEditTaskClose = () => {
+    setShowEditTaskModal(false);
+    setEditTask(null);
+  };
+
   const handleTaskClick = (task: Task) => {
     setSelectedTask(task);
     setShowChecklistModal(true);
@@ -156,6 +168,16 @@ const FcTodoList: React.FC = () => {
 
   const handleAddTask = async () => {
     setError(null);
+
+    if (!newTask.title.trim()) {
+      setError("Task title is required.");
+      return;
+    }
+    if (!newTask.dueDate) {
+      setError("Task due date and time are required.");
+      return;
+    }
+
     try {
       if (!user) return;
 
@@ -186,6 +208,42 @@ const FcTodoList: React.FC = () => {
     }
   };
 
+  const handleMoveToOnProgress = async (id: string) => {
+    setError(null);
+    if (user) {
+      try {
+        const taskRef = doc(db, "users", user.uid, "todolist", id);
+        await updateDoc(taskRef, { status: "onProgress" });
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, status: "onProgress" } : task
+          )
+        );
+      } catch (error) {
+        setError("Error moving task to On Progress. Please try again later.");
+        console.error("Error moving task to On Progress:", error);
+      }
+    }
+  };
+
+  const handleMarkAsCompleted = async (id: string) => {
+    setError(null);
+    if (user) {
+      try {
+        const taskRef = doc(db, "users", user.uid, "todolist", id);
+        await updateDoc(taskRef, { status: "completed" });
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.id === id ? { ...task, status: "completed" } : task
+          )
+        );
+      } catch (error) {
+        setError("Error marking task as completed. Please try again later.");
+        console.error("Error marking task as completed:", error);
+      }
+    }
+  };
+
   const handleDeleteTask = async (id: string) => {
     setError(null);
     if (user) {
@@ -196,6 +254,32 @@ const FcTodoList: React.FC = () => {
         setError("Error deleting task. Please try again later.");
         console.error("Error deleting task:", error);
       }
+    }
+  };
+
+  const handleSaveEditedTask = async () => {
+    if (!editTask || !user) return;
+  
+    try {
+      const taskRef = doc(db, "users", user.uid, "todolist", editTask.id);
+      await updateDoc(taskRef, {
+        title: editTask.title,
+        description: editTask.description,
+        tags: editTask.tags,
+        dueDate: editTask.dueDate,
+        priority: editTask.priority,
+      });
+  
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === editTask.id ? { ...task, ...editTask } : task
+        )
+      );
+  
+      handleEditTaskClose();
+    } catch (error) {
+      setError("Error saving task. Please try again later.");
+      console.error("Error saving task:", error);
     }
   };
 
@@ -222,20 +306,22 @@ const FcTodoList: React.FC = () => {
     return timeLeftString;
   };
 
-  const renderTaskCard = (task: Task) => (
+  const renderTaskCard = (task: Task) => {
+  const isClickable = task.checklist && task.checklist.length > 0;
+
+    return (
     <div
       className="pb-3"
       key={task.id}
-      onClick={() => handleTaskClick(task)}
-      style={{ cursor: "pointer" }}
+      onClick={isClickable ? () => handleTaskClick(task) : undefined}
+      style={{ cursor: isClickable ? "pointer" : "default" }}
     >
       <div className="card p-3" style={{ width: "22rem" }}>
         <div className="d-flex align-items-center">
           <span className="badge bg-success mr-auto ">{task.timeLeft}</span>
-          <FaEdit size={35} style={{ cursor: "pointer" }} className="p-2" />
           <MdDelete
             onClick={(e) => {
-              e.stopPropagation(); // Prevent triggering the modal
+              e.stopPropagation();
               handleDeleteTask(task.id);
             }}
             size={22}
@@ -255,9 +341,36 @@ const FcTodoList: React.FC = () => {
             </span>
           </div>
         </div>
+        <div className="mt-3 d-flex gap-2">
+        {task.status === "pending" && (
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation(); 
+              handleMoveToOnProgress(task.id);
+            }}
+          >
+            Working On
+          </Button>
+        )}
+        {task.status === "onProgress" && (
+          <Button
+            variant="success"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation(); 
+              handleMarkAsCompleted(task.id);
+            }}
+          >
+            Complete
+          </Button>
+        )}
+      </div>
       </div>
     </div>
-  );
+    );
+  }
 
   return (
     <div>
@@ -314,136 +427,144 @@ const FcTodoList: React.FC = () => {
         + Add Task
       </button>
 
-      <Modal
-        show={showAddTaskModal}
-        onHide={handleAddTaskClose}
-        centered
-        className="add-task-modal"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Add New Task</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskTitle">Title</Form.Label>
-              <Form.Control
-                type="text"
-                id="taskTitle"
-                name="title"
-                value={newTask.title}
-                onChange={handleAddTaskChange}
-                placeholder="Enter task title"
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskDescription">Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                id="taskDescription"
-                name="description"
-                value={newTask.description}
-                onChange={handleAddTaskChange}
-                placeholder="Enter task description"
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskTags">Tags (comma-separated)</Form.Label>
-              <Form.Control
-                type="text"
-                id="taskTags"
-                name="tags"
-                value={newTask.tags.join(",")}
-                onChange={handleAddTaskChange}
-                placeholder="Enter tags"
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label htmlFor="taskDueDate">Due Date & Time</Form.Label>
-              <DatePicker
-                id="taskDueDate"
-                selected={newTask.dueDate}
-                onChange={(date) =>
-                  setNewTask((prev) => ({ ...prev, dueDate: date }))
-                }
-                name="dueDate"
-                className="form-control"
-                showTimeSelect
-                showTimeSelectOnly={false}
-                timeIntervals={15}
-                timeCaption="Time"
-                dateFormat="MMMM d, yyyy h:mm aa"
-                minDate={new Date()}
-                placeholderText="Select due date and time"
-                showPopperArrow={false}
-                autoComplete="off"
-              />
-              {dueDateError && (
-                <p className="text-danger">
-                  Due date and time cannot be in the past.
-                </p>
-              )}
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Priority</Form.Label>
-              <Form.Select
-                value={newTask.priority}
-                onChange={(e) =>
-                  setNewTask((prev) => ({ ...prev, priority: e.target.value }))
-                }
-              >
-                <option value="">Select Priority</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </Form.Select>
-            </Form.Group>
-            <Form.Label>Checklist</Form.Label>
-            {newTask.checklist.map((item, index) => (
-              <div key={index} className="mb-2">
-                <FormCheck
-                  type="checkbox"
-                  id={`checklist-${index}`}
-                  label={
-                    <Form.Control
-                      type="text"
-                      value={item.text}
-                      onChange={(e) => {
-                        const updatedChecklist = [...newTask.checklist];
-                        updatedChecklist[index].text = e.target.value;
-                        setNewTask((prev) => ({
-                          ...prev,
-                          checklist: updatedChecklist,
-                        }));
-                      }}
+                <Modal
+            show={showAddTaskModal}
+            onHide={handleAddTaskClose}
+            centered
+            className="add-task-modal"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Add New Task</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                {/* Task Title */}
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="taskTitle">Title</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="taskTitle"
+                    name="title"
+                    value={newTask.title}
+                    onChange={handleAddTaskChange}
+                    placeholder="Enter task title"
+                    required
+                  />
+                </Form.Group>
+
+                {/* Task Description */}
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="taskDescription">Description</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    id="taskDescription"
+                    name="description"
+                    value={newTask.description}
+                    onChange={handleAddTaskChange}
+                    placeholder="Enter task description"
+                  />
+                </Form.Group>
+
+                {/* Task Tags */}
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="taskTags">Tags (comma-separated)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="taskTags"
+                    name="tags"
+                    value={newTask.tags.join(",")}
+                    onChange={handleAddTaskChange}
+                    placeholder="Enter tags"
+                  />
+                </Form.Group>
+
+                {/* Task Due Date */}
+                <Form.Group className="mb-3">
+                  <Form.Label htmlFor="taskDueDate">Due Date & Time</Form.Label>
+                  <DatePicker
+                    id="taskDueDate"
+                    selected={newTask.dueDate}
+                    onChange={(date) =>
+                      setNewTask((prev) => ({ ...prev, dueDate: date }))
+                    }
+                    name="dueDate"
+                    className="form-control"
+                    showTimeSelect
+                    timeIntervals={1}
+                    timeCaption="Time"
+                    dateFormat="MMMM d, yyyy h:mm aa"
+                    minDate={new Date()}
+                    placeholderText="Select due date and time"
+                    autoComplete="off"
+                  />
+                  {dueDateError && (
+                    <p className="text-danger">
+                      Due date and time cannot be in the past.
+                    </p>
+                  )}
+                </Form.Group>
+
+                {/* Task Priority */}
+                <Form.Group className="mb-3">
+                  <Form.Label>Priority</Form.Label>
+                  <Form.Select
+                    value={newTask.priority}
+                    onChange={(e) =>
+                      setNewTask((prev) => ({ ...prev, priority: e.target.value }))
+                    }
+                  >
+                    <option value="">Select Priority</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </Form.Select>
+                </Form.Group>
+
+                {/* Task Checklist */}
+                <Form.Label>Checklist</Form.Label>
+                {newTask.checklist.map((item, index) => (
+                  <div key={index} className="mb-2">
+                    <FormCheck
+                      type="checkbox"
+                      id={`checklist-${index}`}
+                      label={
+                        <Form.Control
+                          type="text"
+                          value={item.text}
+                          onChange={(e) => {
+                            const updatedChecklist = [...newTask.checklist];
+                            updatedChecklist[index].text = e.target.value;
+                            setNewTask((prev) => ({
+                              ...prev,
+                              checklist: updatedChecklist,
+                            }));
+                          }}
+                        />
+                      }
+                      checked={item.checked}
+                      onChange={(e) => {}}
+                      name={index.toString()}
                     />
-                  }
-                  checked={item.checked}
-                  onChange={(e) => {}}
-                  name={index.toString()}
-                  required
-                />
-              </div>
-            ))}
-            <Button variant="link" onClick={handleAddChecklist}>
-              Add Checklist Item
-            </Button>
-            {error && <p className="text-danger">{error}</p>}
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleAddTaskClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleAddTask}>
-            Add Task
-          </Button>
-        </Modal.Footer>
-      </Modal>
+                  </div>
+                ))}
+                <Button variant="link" onClick={handleAddChecklist}>
+                  Add Checklist Item
+                </Button>
+
+                {/* Error Message */}
+                {error && <p className="text-danger">{error}</p>}
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleAddTaskClose}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={handleAddTask}>
+                Add Task
+              </Button>
+            </Modal.Footer>
+          </Modal>
 
       <Modal
         show={showChecklistModal}
