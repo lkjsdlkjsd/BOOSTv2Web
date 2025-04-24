@@ -304,7 +304,7 @@ export default function HomePage() {
         <p className="explanation">{productivityMessage.explanation}</p>
       </div>
 
-      <h2 className="pt-4">Upcoming Work</h2>
+      <h2 className="pt-4 mx-3">Upcoming Work</h2>
       <div className="row flex-nowrap overflow-x-auto shadow-sm p-3 bg-white rounded border-top border-bottom">
         {tasks.length > 0 ? (
           tasks.map((task, index) => (
@@ -347,7 +347,7 @@ export default function HomePage() {
       </div>
 
       <div className="d-flex justify-content-between align-items-center mt-4">
-        <h2>Performance Statistics</h2>
+        <h2 className="mx-3">Performance Statistics</h2>
         <Dropdown>
           <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
             {view.charAt(0).toUpperCase() + view.slice(1)}

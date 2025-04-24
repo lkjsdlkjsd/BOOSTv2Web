@@ -1,5 +1,5 @@
 /* Base container - cute and spacious */
-.profile-container {
+#profile-container {
     width: 100%;
     min-height: 100vh;
     background: linear-gradient(135deg, #d0f0c0 0%, #f0fff4 100%);
@@ -10,7 +10,7 @@
 }
 
 /* Profile card area */
-.profile-header {
+#profile-header {
     background: #ffffff;
     border-radius: 24px;
     padding: 30px;
@@ -24,7 +24,7 @@
 }
 
 /* Avatar */
-.profile-avatar {
+#profile-avatar {
     width: 140px;
     height: 140px;
     border-radius: 50%;
@@ -34,22 +34,22 @@
     transition: transform 0.3s ease;
 }
 
-.profile-avatar:hover {
+#profile-avatar:hover {
     transform: scale(1.05);
 }
 
 /* User info */
-.profile-info {
+#profile-info {
     flex-grow: 1;
 }
 
-.profile-info h2 {
+#profile-info h2 {
     font-size: 28px;
     margin: 0;
     color: #2e7d32;
 }
 
-.profile-info span {
+#profile-info span {
     font-size: 14px;
     color: #66bb6a;
     margin-top: 5px;
@@ -73,7 +73,7 @@ button.btn-secondary:hover {
 }
 
 /* Form styling */
-form {
+#profile-form {
     background: #ffffff;
     margin-top: 30px;
     padding: 30px;
@@ -83,13 +83,13 @@ form {
     max-width: 800px;
 }
 
-form .form-group label {
+#profile-form .form-group label {
     font-weight: 600;
     color: #4caf50;
 }
 
-form .form-control,
-form .form-select {
+#profile-form .form-control,
+#profile-form .form-select {
     border-radius: 12px;
     border: 1px solid #a5d6a7;
     background-color: #f9fff9;
@@ -98,8 +98,8 @@ form .form-select {
     padding: 10px;
 }
 
-form .form-control:focus,
-form .form-select:focus {
+#profile-form .form-control:focus,
+#profile-form .form-select:focus {
     border-color: #81c784;
     box-shadow: 0 0 0 0.25rem rgba(129, 199, 132, 0.25);
 }
@@ -119,22 +119,22 @@ button.btn-primary:hover {
 
 /* Responsive */
 @media screen and (max-width: 768px) {
-    .profile-header {
+    #profile-header {
         flex-direction: column;
         align-items: center;
         text-align: center;
     }
 
-    .profile-avatar {
+    #profile-avatar {
         width: 120px;
         height: 120px;
     }
 
-    .profile-info h2 {
+    #profile-info h2 {
         font-size: 22px;
     }
 
-    form {
+    #profile-form {
         padding: 20px;
     }
 }

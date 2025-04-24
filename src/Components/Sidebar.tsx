@@ -143,7 +143,7 @@ export default function Sidebar() {
 
         <div className="user-section" style={{ cursor: "pointer" }}>
           <img
-            src={userData.profilePictureUrl || "default-avatar.png"}
+            src={userData.profilePictureUrl || "src/assets/Default.jpg"}
             alt="User Avatar"
             className="profile-avatar"
             onClick={() => {
@@ -154,7 +154,9 @@ export default function Sidebar() {
           />
           {!isCollapsed && (
             <>
-              <span className="username px-2">{userData.name}</span>
+              <span className="username px-2">
+                {userData.name || "Player4"}
+              </span>
             </>
           )}
         </div>

@@ -737,7 +737,13 @@ const PomodoroTimer: React.FC = () => {
           </Card>
         )}
       </div>
-      <div className="text-center p-4">
+      <div
+        className="text-center p-4"
+        style={{
+          maxWidth: "500px",
+          margin: "auto",
+        }}
+      >
         <Card
           id="Card"
           className={`p-4 rounded mt-3 ${

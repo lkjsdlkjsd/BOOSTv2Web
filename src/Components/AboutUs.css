@@ -1,0 +1,111 @@
+#color2 {
+  color: #FFCE1B;
+}
+
+/* AboutUs.css */
+
+.overview-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0fff4;
+  /* soft green background */
+  color: #333;
+}
+
+#boost-tagline {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+#color2 {
+  color: #3bb273;
+  /* vibrant green */
+}
+
+.overview-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  color: #2f855a;
+}
+
+section {
+  margin: 2rem auto;
+  max-width: 800px;
+  background-color: #ffffff;
+  border-left: 5px solid #3bb273;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+section h2 {
+  color: #276749;
+  margin-bottom: 0.75rem;
+}
+
+section p,
+section ul {
+  line-height: 1.6;
+}
+
+.contact-list {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-list li {
+  margin-bottom: 0.5rem;
+}
+
+.contact-list a {
+  color: #38a169;
+  text-decoration: none;
+}
+
+.contact-list a:hover {
+  text-decoration: underline;
+}
+
+/* Developer Team Styling */
+.dev-team {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+}
+
+.dev-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.dev-card:hover {
+  transform: translateY(-5px);
+}
+
+.dev-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #3bb273;
+  margin-bottom: 0.75rem;
+}
+
+.dev-card h3 {
+  font-size: 1.1rem;
+  margin: 0.5rem 0 0.25rem;
+  color: #2f855a;
+}
+
+.dev-card p {
+  font-size: 0.9rem;
+  color: #4a5568;
+}

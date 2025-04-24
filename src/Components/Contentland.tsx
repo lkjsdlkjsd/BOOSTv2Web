@@ -10,14 +10,23 @@ import Tracker from "/src/assets/Tracker.jpeg";
 import Reward from "/src/assets/Reward.png";
 import Focus from "/src/assets/Focus.jpg";
 import { Button, Modal } from "react-bootstrap";
+import Header from "./Header";
+import Nav from "./LandingPageNavigation";
+import Footer from "./Footer.tsx";
+import { useNavigate } from "react-router-dom";
 
 function Contentland() {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({
     title: "",
     description: "",
   });
   const [isPlaying, setIsPlaying] = useState(false);
+
+  const AboutUS = () => {
+    navigate("/Aboutus");
+  };
 
   const handlePlay = () => {
     const video = document.getElementById("custom-video") as HTMLVideoElement;
@@ -46,7 +55,9 @@ function Contentland() {
 
   return (
     <React.Fragment>
-      <h2 className=" text-center fw-semibold" id="boost-tagline">
+      <Header />
+      <Nav />
+      <h2 className=" text-center fw-semibold pt-5" id="boost-tagline">
         <img className="img-fluid" src={Logo} alt="Logo" id="Logostart" />
         <span id="color1">Unlock</span> Your Potential, Boost Yourself!
       </h2>
@@ -58,7 +69,7 @@ function Contentland() {
       </h6>
       <div className="container" id="button-row">
         <ul className="list-unstyled d-flex justify-content-center">
-          <li className="btn p-3 m-1" id="abtus-btn">
+          <li className="btn p-3 m-1" id="abtus-btn" onClick={AboutUS}>
             About Us
           </li>
           <li className="btn p-3 m-1" id="serv-btn" onClick={scrollToServices}>
@@ -334,6 +345,7 @@ function Contentland() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <Footer />
     </React.Fragment>
   );
 }

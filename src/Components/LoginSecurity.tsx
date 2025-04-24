@@ -7,8 +7,9 @@ import {
   updatePassword,
   reauthenticateWithCredential,
   EmailAuthProvider,
-  signOut, // Import signOut from Firebase Authentication
+  signOut,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 import { auth, facebookProvider, googleProvider } from "../firebase";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { User } from "firebase/auth";
@@ -16,6 +17,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons from rea
 import "./LoginSecurity.css";
 
 const LoginSecurity = () => {
+  const navigate = useNavigate();
   const [showInput, setShowInput] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [newEmail, setNewEmail] = useState<string>("");
@@ -115,7 +117,8 @@ const LoginSecurity = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth); // Sign out the user
-      window.location.reload(); // Refresh the page
+      navigate("/");
+      window.location.reload();
     } catch (err) {
       alert("Error logging out.");
     }

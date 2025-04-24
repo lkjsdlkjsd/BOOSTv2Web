@@ -10,10 +10,13 @@ import {
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import TermsPolicy from "./Components/TermsPolicy";
 import "bootstrap/dist/css/bootstrap.css";
-import "./Signup.css";
 import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import "/src/Signup.css";
+import Header from "../src/Components/Header";
+import Nav from "../src/Components/LandingPageNavigation";
+import Footer from "../src/Components/Footer.tsx";
 
 interface UserInfo {
   name: string;
@@ -34,7 +37,7 @@ const restrictedUsernames = [
 ];
 
 const Signup: React.FC = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] =
     useState<boolean>(false);
@@ -171,6 +174,9 @@ const Signup: React.FC = () => {
 
   return (
     <>
+      <Header />
+      <Nav />
+
       <motion.div
         className="d-flex justify-content-center"
         id="bg"
@@ -340,7 +346,7 @@ const Signup: React.FC = () => {
           <div className="p-4"></div>
         </motion.div>
       </motion.div>
-
+      <Footer />
       {showTerms && <TermsPolicy onClose={() => setShowTerms(false)} />}
     </>
   );

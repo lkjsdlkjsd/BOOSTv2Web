@@ -60,9 +60,6 @@
   transition: background 0.3s ease;
 }
 
-.close-btn:hover {
-  background: #000000;
-}
 
 /* Scrollbar styling */
 .terms-box::-webkit-scrollbar {

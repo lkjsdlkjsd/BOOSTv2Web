@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 // import Header from "./Components/Header.tsx";
 // import LandingNav from "./Components/LandingPageNavigation.tsx";
-import Footer from "./Components/Footer.tsx";
 import "bootstrap/dist/css/bootstrap.css";
 import "/src/Login.css";
 import { Eye, EyeOff } from "lucide-react";
@@ -13,6 +12,9 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import Header from "../src/Components/Header";
+import Nav from "../src/Components/LandingPageNavigation";
+import Footer from "../src/Components/Footer.tsx";
 
 function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -90,9 +92,12 @@ function Login() {
 
   return (
     <React.Fragment>
+      <Header />
+      <Nav />
+
       <motion.div
         className="d-flex justify-content-center"
-        id="bg"
+        id="bg2"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}

@@ -3,10 +3,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.text-center {
-  max-width: 500px;
-  margin: auto;
-}
+
 
 .card {
   background-color: #3f5e34;

@@ -142,16 +142,16 @@ const Profile: React.FC = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="profile-container">
-      <div className="profile-header">
+    <div id="profile-container">
+      <div id="profile-header">
         <img
+          id="profile-avatar"
           src={
             formData.profilePicture
               ? URL.createObjectURL(formData.profilePicture)
-              : formData.profilePictureUrl || "default-avatar.png"
+              : formData.profilePictureUrl || "src/assets/Default.jpg"
           }
           alt="User Avatar"
-          className="profile-avatar"
           onClick={() =>
             isEditing && document.getElementById("fileInput")?.click()
           }
@@ -164,19 +164,19 @@ const Profile: React.FC = () => {
           onChange={handleChange}
           style={{ display: "none" }}
         />
-        <div className="profile-info">
+        <div id="profile-info">
           <h2>@{formData.name || "User"}</h2>
           <span>Joined on {formData.createdAt || "Date not available"}</span>
         </div>
         <Button
-          variant="secondary text-light	"
+          variant="secondary text-light"
           onClick={() => setIsEditing(!isEditing)}
         >
           {isEditing ? "Cancel" : "Edit"}
         </Button>
       </div>
 
-      <Form className="mt-4">
+      <Form id="profile-form">
         <Form.Group className="mb-3">
           <Form.Label>Name</Form.Label>
           <Form.Control
