@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./dashboard-content.css";
 import ExpBar from "./exp-notif-cal.tsx";
+import ChatbotMascot from "../assets/Mascot.png";
+import Chatbot from "./ChatBot.tsx";
 import { Calendar, Clock } from "lucide-react";
 import {
   getFirestore,
@@ -64,6 +66,7 @@ export default function HomePage() {
   });
   const [loading, setLoading] = useState<boolean>(true);
   const [hasBoostedToday, setHasBoostedToday] = useState(false);
+  const [isChatbotVisible, setIsChatbotVisible] = useState(true);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -287,6 +290,19 @@ export default function HomePage() {
         };
 
   if (loading) return <div className="text-center">Loading...</div>;
+  const handleMascotClick = () => {
+    const mascotElement = document.querySelector(".mascot-container");
+
+    if (mascotElement) {
+      mascotElement.classList.add("fade-out");
+      setTimeout(() => {
+        setIsChatbotVisible((prev) => !prev);
+        mascotElement.classList.remove("fade-out");
+      }, 500);
+    } else {
+      setIsChatbotVisible((prev) => !prev);
+    }
+  };
 
   return (
     <div>
@@ -303,6 +319,20 @@ export default function HomePage() {
         <p className="verse">{productivityMessage.verse}</p>
         <p className="explanation">{productivityMessage.explanation}</p>
       </div>
+      <div className="mascot-container" onClick={handleMascotClick}>
+        <img
+          src={ChatbotMascot}
+          alt="Chatbot Mascot"
+          className="mascot-image d-flex justify-content-center"
+        />
+        <h6 className="text-success text-center">
+          BOOMI HERE! <br />
+          AI chatbot
+        </h6>
+      </div>
+
+      {/* Conditionally render the Chatbot */}
+      {isChatbotVisible && <Chatbot />}
 
       <h2 className="pt-4 mx-3">Upcoming Work</h2>
       <div className="row flex-nowrap overflow-x-auto shadow-sm p-3 bg-white rounded border-top border-bottom">

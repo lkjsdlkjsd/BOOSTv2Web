@@ -13,6 +13,7 @@ import SettingsTabs from "./Settings.tsx";
 import Profile from "./Profile.tsx";
 import Reward from "./Reward.tsx";
 import ColabTab from "./Colab-tab.tsx";
+import Logo from "../assets/BOOSTWORD.png";
 import { FiMenu } from "react-icons/fi";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -22,7 +23,7 @@ export default function Sidebar() {
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem("activeTab") || "Dashboard";
   });
-  const [showProfile, setShowProfile] = useState(false); // New state for showing the Profile
+  const [showProfile, setShowProfile] = useState(false);
   const [userData, setUserData] = useState<any>({
     profilePictureUrl: "",
     name: "",
@@ -109,12 +110,7 @@ export default function Sidebar() {
       <div className={`sidebar ${isCollapsed ? "collapsed" : "expanded"}`}>
         <div className="logo-container m-2">
           {!isCollapsed && (
-            <img
-              src="./src/assets/BOOSTWORD.png"
-              id="logoword"
-              className="me-4"
-              alt="Logo"
-            />
+            <img src={Logo} id="logoword" className="me-4" alt="Logo" />
           )}
           <button
             onClick={() => setIsCollapsed((prev) => !prev)}

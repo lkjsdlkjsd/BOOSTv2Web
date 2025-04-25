@@ -224,3 +224,39 @@
         text-shadow: 0 0 10px #ff6a00, 0 0 20px #ff6a00, 0 0 30px #ff6a00;
     }
 }
+
+.mascot-container {
+    position: fixed;
+    bottom: 20px;
+    /* Adjust as needed */
+    right: 20px;
+    /* Adjust as needed */
+    cursor: pointer;
+    z-index: 1000;
+    /* Ensures it stays above other elements */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    /* Adding opacity transition for fade-out effect */
+}
+
+.mascot-image {
+    width: 90px;
+    height: auto;
+    transition: transform 0.3s ease, opacity 0.5s ease;
+    /* Added opacity transition */
+}
+
+.mascot-image:hover {
+    transform: scale(1.1);
+}
+
+.mascot-container.hidden {
+    opacity: 0;
+    /* Makes the mascot image invisible */
+    transform: scale(0);
+    /* Shrinks it to disappear */
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}

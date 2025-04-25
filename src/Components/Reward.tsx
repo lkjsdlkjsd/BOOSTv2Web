@@ -193,10 +193,10 @@ export default function Reward() {
 
       {/* Form Modal */}
       {claimingReward && (
-        <div className="modal-bg">
-          <div className="modal-content bg-light p-4 rounded-5">
+        <div id="modal-bg">
+          <div id="modal-content">
             <h3>Claim {claimingReward.name}</h3>
-            <form onSubmit={handleFormSubmit} className="row gap-2">
+            <form onSubmit={handleFormSubmit}>
               <input
                 type="text"
                 ref={nameRef}
@@ -218,7 +218,7 @@ export default function Reward() {
                 id="claim-address"
                 required
               />
-              <div className="flex items-center gap-2 mt-2">
+              <div>
                 <input
                   type="checkbox"
                   id="accept-terms"
@@ -228,31 +228,22 @@ export default function Reward() {
                 />
                 <label htmlFor="accept-terms">
                   I accept the{" "}
-                  <button
-                    type="button"
-                    onClick={() => setShowTermsModal(true)}
-                    style={{
-                      color: "#90e0a4",
-                      textDecoration: "underline",
-                      background: "none",
-                      border: "none",
-                    }}
-                  >
+                  <button type="button" onClick={() => setShowTermsModal(true)}>
                     Terms & Conditions
                   </button>
                 </label>
               </div>
-              <div className="modal-buttons flex gap-2 mt-3">
+              <div>
                 <button
+                  id="submit-claim"
                   type="submit"
-                  className="btn btn-success"
                   disabled={!acceptedTerms}
                 >
                   Submit & Claim
                 </button>
                 <button
+                  id="cancel-claim"
                   type="button"
-                  className="btn btn-secondary"
                   onClick={() => {
                     setClaimingReward(null);
                     setAcceptedTerms(false);

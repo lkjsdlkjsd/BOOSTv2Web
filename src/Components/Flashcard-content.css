@@ -73,12 +73,6 @@ button.btn-primary:hover {
   border-radius: 18px;
 }
 
-h2,
-h3 {
-  color: #2b5c2b;
-  font-weight: bold;
-}
-
 #start-btn:disabled {
   background-color: #c1e2c1;
   color: #ffffff;

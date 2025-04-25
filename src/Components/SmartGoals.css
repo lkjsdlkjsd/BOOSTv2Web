@@ -173,7 +173,6 @@
 }
 
 .btn {
-  color: white;
   border: none;
   border-radius: 8px;
   padding: 0.5rem 1rem;
@@ -185,7 +184,7 @@ input[type="text"],
 input[type="color"] {
   width: 100%;
   margin-top: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: .2rem;
   padding: 0.5rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;

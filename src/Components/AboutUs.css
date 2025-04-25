@@ -30,7 +30,7 @@
   color: #2f855a;
 }
 
-section {
+/* section {
   margin: 2rem auto;
   max-width: 800px;
   background-color: #ffffff;
@@ -38,17 +38,14 @@ section {
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
+} */
 
-section h2 {
-  color: #276749;
-  margin-bottom: 0.75rem;
-}
 
-section p,
+
+/* section p,
 section ul {
   line-height: 1.6;
-}
+} */
 
 .contact-list {
   list-style: none;

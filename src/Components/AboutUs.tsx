@@ -1,6 +1,5 @@
 import React from "react";
 import "./AboutUs.css";
-import Logo from "/src/assets/LOGO.png";
 const CompanyOverview: React.FC = () => {
   const developers = [
     {

@@ -165,7 +165,7 @@ const Profile: React.FC = () => {
           style={{ display: "none" }}
         />
         <div id="profile-info">
-          <h2>@{formData.name || "User"}</h2>
+          <h2 id="Name">@{formData.name || "User"}</h2>
           <span>Joined on {formData.createdAt || "Date not available"}</span>
         </div>
         <Button

@@ -34,13 +34,13 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>1. Introduction</h2>
+          <h2 className="Title">1. Introduction</h2>
           <p>
             Welcome to our platform! By accessing or using our services, you
             agree to comply with these Terms of Use and our Privacy Policy.
             Please read them carefully.
           </p>
-          <h2>2. Acceptance of Terms</h2>
+          <h2 className="Title">2. Acceptance of Terms</h2>
           <p>
             By using our platform, you confirm that you accept these terms and
             agree to abide by them. If you do not agree, please refrain from
@@ -49,7 +49,7 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>3. User Responsibilities</h2>
+          <h2 className="Title">3. User Responsibilities</h2>
           <p>
             You agree to use the platform lawfully and responsibly. You must not
             engage in any activity that violates applicable laws or infringes on
@@ -58,7 +58,7 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>4. Data Collection and Usage</h2>
+          <h2 className="Title">4. Data Collection and Usage</h2>
           <p>
             We collect user data to improve our services and provide a better
             experience. This may include:
@@ -76,7 +76,7 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>5. Account Security</h2>
+          <h2 className="Title">5. Account Security</h2>
           <p>
             You are responsible for maintaining the confidentiality of your
             account credentials. Notify us immediately if you suspect
@@ -85,7 +85,7 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>6. Modifications to Terms</h2>
+          <h2 className="Title">6. Modifications to Terms</h2>
           <p>
             We may update these terms periodically. Continued use of the
             platform after changes indicates your acceptance of the revised
@@ -94,7 +94,7 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>7. Termination</h2>
+          <h2 className="Title">7. Termination</h2>
           <p>
             We reserve the right to suspend or terminate your access to the
             platform if you violate these terms.
@@ -102,7 +102,7 @@ const TermsPolicy = ({ onClose }: { onClose: () => void }) => {
         </section>
 
         <section>
-          <h2>8. Contact Us</h2>
+          <h2 className="Title">8. Contact Us</h2>
           <p>
             If you have questions about these terms or our privacy practices,
             please contact us at [Insert Contact Information].

@@ -105,7 +105,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9;
 }
 
 #modal-content {
@@ -153,4 +153,87 @@
   #rewards-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}
+
+/* Modal background */
+/* #modal-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+} */
+
+/* Modal content box */
+#modal-content {
+  background-color: #f8f9fa;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Input fields */
+#claim-name,
+#claim-email,
+#claim-address {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  margin-top: 0.5rem;
+}
+
+/* Checkbox and label */
+#accept-terms {
+  margin-top: 1rem;
+}
+
+label[for="accept-terms"] {
+  margin-left: 0.5rem;
+  display: inline-block;
+  color: #333;
+}
+
+/* Terms button inside label */
+label[for="accept-terms"] button {
+  color: #90e0a4;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1em;
+}
+
+/* Buttons */
+#submit-claim,
+#cancel-claim {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+#submit-claim {
+  background-color: #28a745;
+  color: white;
+}
+
+#submit-claim:disabled {
+  background-color: #a6d8b8;
+  cursor: not-allowed;
+}
+
+#cancel-claim {
+  background-color: #6c757d;
+  color: white;
+  margin-left: 0.5rem;
 }
