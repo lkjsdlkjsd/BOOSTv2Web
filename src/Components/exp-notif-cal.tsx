@@ -11,6 +11,8 @@ import {
   getDocs,
   orderBy,
   limit,
+  onSnapshot,
+  DocumentData,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { format } from "date-fns";
@@ -169,6 +171,36 @@ export default function ExpNotifCal() {
     };
 
     fetchExpAndTodoList();
+  }, []);
+
+  useEffect(() => {
+    const fetchXpRealtime = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const db = getFirestore();
+          const userDocRef = doc(db, "users", user.uid);
+  
+          const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+              const userData = docSnap.data();
+              const currentExp = userData.exp || 0;
+              const currentLevel = Math.floor(currentExp / 100);
+              setExp(currentExp);
+              setLevel(currentLevel);
+              setXp(`${currentExp % 100}/100XP`);
+            }
+          });
+  
+          return () => unsubscribe(); 
+        }
+      } catch (error) {
+        console.error("Error setting up XP listener:", error);
+      }
+    };
+  
+    fetchXpRealtime();
   }, []);
 
   const toggleNotifFloating = () => {
