@@ -12,7 +12,6 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  DocumentData,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { format } from "date-fns";
@@ -181,7 +180,7 @@ export default function ExpNotifCal() {
         if (user) {
           const db = getFirestore();
           const userDocRef = doc(db, "users", user.uid);
-  
+
           const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
             if (docSnap.exists()) {
               const userData = docSnap.data();
@@ -192,14 +191,14 @@ export default function ExpNotifCal() {
               setXp(`${currentExp % 100}/100XP`);
             }
           });
-  
-          return () => unsubscribe(); 
+
+          return () => unsubscribe();
         }
       } catch (error) {
         console.error("Error setting up XP listener:", error);
       }
     };
-  
+
     fetchXpRealtime();
   }, []);
 

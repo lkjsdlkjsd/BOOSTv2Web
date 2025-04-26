@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Contentland.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Logo from "/src/assets/LOGO.png";
@@ -27,7 +27,11 @@ function Contentland() {
   const AboutUS = () => {
     navigate("/Aboutus");
   };
-
+  useEffect(() => {
+    // @ts-ignore to avoid TS error since AOS is global
+    AOS.init({ duration: 1000, once: true });
+  }, []);
+  //https://chatgpt.com/share/680bd417-6f50-800a-88fc-68f4ec137162
   const handlePlay = () => {
     const video = document.getElementById("custom-video") as HTMLVideoElement;
     if (video) {
@@ -55,19 +59,49 @@ function Contentland() {
 
   return (
     <React.Fragment>
-      <Header />
-      <Nav />
-      <h2 className=" text-center fw-semibold pt-5" id="boost-tagline">
-        <img className="img-fluid" src={Logo} alt="Logo" id="Logostart" />
+      <Header data-aos="fade-down" data-aos-delay="200" />
+      <Nav data-aos="fade-down" data-aos-delay="300" />
+      <h2
+        className="text-center fw-semibold pt-5"
+        id="boost-tagline"
+        data-aos="fade-down"
+        data-aos-delay="400"
+      >
+        <img
+          className="img-fluid"
+          src={Logo}
+          alt="Logo"
+          id="Logostart"
+          data-aos="zoom-in"
+          data-aos-delay="450"
+        />
         <span id="color1">Unlock</span> Your Potential, Boost Yourself!
       </h2>
-      <h4 id="text1" className="text-center pb-1 medium-weight">
+
+      <h4
+        id="text1"
+        className="text-center pb-1 medium-weight"
+        data-aos="fade-up"
+        data-aos-delay="500"
+      >
         From Brainstorming to Focused Study
       </h4>
-      <h6 className="text-center pb-4" id="Unlock">
+
+      <h6
+        className="text-center pb-4"
+        id="Unlock"
+        data-aos="fade-up"
+        data-aos-delay="550"
+      >
         Unlock Your Full Potential.
       </h6>
-      <div className="container" id="button-row">
+
+      <div
+        className="container"
+        id="button-row"
+        data-aos="fade-up"
+        data-aos-delay="600"
+      >
         <ul className="list-unstyled d-flex justify-content-center">
           <li className="btn p-3 m-1" id="abtus-btn" onClick={AboutUS}>
             About Us
@@ -77,7 +111,12 @@ function Contentland() {
           </li>
         </ul>
       </div>
-      <div className="video-container d-flex justify-self-center mt-5 pt-5">
+
+      <div
+        className="video-container d-flex justify-self-center mt-5 pt-5"
+        data-aos="zoom-in-up"
+        data-aos-delay="700"
+      >
         <video
           id="custom-video"
           className="video-player"
@@ -102,34 +141,38 @@ function Contentland() {
         )}
       </div>
 
-      <div className="container">
+      <div className="container" data-aos="fade-up" data-aos-delay="800">
         <div className="row">
           <div className="col-sm-1">
             <h2 className="fw-semibold">Benefits</h2>
           </div>
         </div>
-        <div className="row">
+        <div className="row" data-aos="fade-up" data-aos-delay="850">
           <div className="col-sm-12">
             Effective time management brings numerous benefits, enhancing
-            productivity, reducing stress, and improving overall well-being. By
-            prioritizing tasks and setting clear goals, individuals can
-            accomplish more in less time, leading to increased efficiency and a
-            sense of achievement. Proper time management also helps reduce
-            procrastination, ensuring that deadlines are met without last-minute
-            pressure. Additionally, it allows for a better work-life balance,
-            providing more time for relaxation, hobbies, and personal growth.
+            productivity...
           </div>
         </div>
+
         <div className="row pt-5">
-          <div className="col-sm m-3 card">
+          {/** Each card has its own animation */}
+          <div
+            className="col-sm m-3 card"
+            data-aos="fade-right"
+            data-aos-delay="900"
+          >
             <h1 className="fw-bold text-end p-4">01</h1>
-            <h5>Focus on your work task </h5>
+            <h5>Focus on your work task</h5>
             <span className="pb-5">
               Fit your coursework around your existing commitments and
               obligations.
             </span>
           </div>
-          <div className="col-sm m-3 card">
+          <div
+            className="col-sm m-3 card"
+            data-aos="fade-up"
+            data-aos-delay="950"
+          >
             <h1 className="fw-bold text-end p-4">02</h1>
             <h5>Improve your productivity</h5>
             <span className="pb-5">
@@ -137,26 +180,38 @@ function Contentland() {
               and development.
             </span>
           </div>
-          <div className="col-sm m-3 card">
+          <div
+            className="col-sm m-3 card"
+            data-aos="fade-left"
+            data-aos-delay="1000"
+          >
             <h1 className="fw-bold text-end p-4">03</h1>
             <h5>Less Stress</h5>
             <span className="pb-5">
-              When you ave better organization and task management. It help you
-              feel less overwhelmed and lowers stress level.
+              Better organization and task management help you feel less
+              overwhelmed and reduce stress levels.
             </span>
           </div>
         </div>
+
         <div className="row pt-2">
-          <div className="col-sm m-3 card">
+          <div
+            className="col-sm m-3 card"
+            data-aos="fade-right"
+            data-aos-delay="1050"
+          >
             <h1 className="fw-bold text-end p-4">04</h1>
             <h5>Quality of your work</h5>
             <span className="pb-5">
-              Productivity tools often include feature like automated reminders
-              and version control to help you minizie errors and maintain
-              quality of work.
+              Productivity tools often include features like automated reminders
+              and version control.
             </span>
           </div>
-          <div className="col-sm m-3 card">
+          <div
+            className="col-sm m-3 card"
+            data-aos="fade-up"
+            data-aos-delay="1100"
+          >
             <h1 className="fw-bold text-end p-4">05</h1>
             <h5>Growth Opportunities</h5>
             <span className="pb-5">
@@ -164,16 +219,25 @@ function Contentland() {
               development opportunities.
             </span>
           </div>
-          <div className="col-sm m-3 card">
+          <div
+            className="col-sm m-3 card"
+            data-aos="fade-left"
+            data-aos-delay="1150"
+          >
             <h1 className="fw-bold text-end p-4">06</h1>
             <h5>Reduce Burnout</h5>
             <span className="pb-5">
-              Spending the right amount of time on daily processes makes you
-              cope better with your worklaod, allowing you to complete tasks.
+              Spending the right amount of time on processes helps you better
+              manage your workload.
             </span>
           </div>
         </div>
-        <div className="row mb-5 mt-5 pt-5">
+
+        <div
+          className="row mb-5 mt-5 pt-5"
+          data-aos="fade-up"
+          data-aos-delay="1200"
+        >
           <div className="row mb-2">
             <div className="col-lg">
               <h2 className="fw-semibold" id="services-section">
@@ -185,148 +249,151 @@ function Contentland() {
           <div className="col-sm-12">
             <span>
               At BulaCanBoost, we are committed to providing top-quality
-              services tailored to meet your unique needs. Our team of experts
-              ensures seamless solutions with a focus on innovation, efficiency,
-              and customer satisfaction. Whether you're looking for professional
-              guidance, technical support, or creative solutions, we strive to
-              deliver excellence at every step. With a dedication to quality and
-              a passion for service, we aim to enhance your experience and help
-              you achieve your goals effortlessly.
+              services tailored to your needs...
             </span>
           </div>
         </div>
+
+        {/** Service Cards */}
         <div className="row d-flex justify-content-center">
-          <div className="col-md-5 m-1 card">
+          <div
+            className="col-md-5 m-1 card"
+            data-aos="zoom-in"
+            data-aos-delay="1300"
+          >
             <img
-              alt="place holder"
               src={Pomodoro}
               className="rounded mt-3"
               height={300}
+              alt="Pomodoro Timer"
             />
             <h5 className="fw-semibold m-3">Pomodoro Timer</h5>
             <span className="px-3">
-              A time management method based on 25-minute stretches of focused
-              work broken by five-minute brakes.
+              A time management method based on 25-minute stretches...
             </span>
             <a
               className="btn m-2 mb-4"
               id="serv-btns"
-              onClick={() =>
-                handleShow(
-                  "Pomodoro Timer",
-                  "The Pomodoro Timer is a time management technique designed to improve focus and productivity. It involves breaking work into intervals, traditionally 25 minutes in length, separated by short 5-minute breaks. After completing four consecutive work sessions, a longer break of 15 to 30 minutes is taken. This method helps prevent burnout, maintains concentration, and enhances efficiency by encouraging short bursts of deep work followed by necessary rest. It is particularly useful for students, professionals, and anyone looking to optimize their workflow and minimize distractions."
-                )
-              }
+              onClick={() => handleShow("Pomodoro Timer", "...")}
             >
               Know more!
             </a>
           </div>
-          <div className="col-md-5 m-1 card">
-            <img src={Todo} className="rounded mt-3" height={300} />
+          <div
+            className="col-md-5 m-1 card"
+            data-aos="zoom-in"
+            data-aos-delay="1350"
+          >
+            <img
+              src={Todo}
+              className="rounded mt-3"
+              height={300}
+              alt="To-Do List"
+            />
             <h5 className="fw-semibold m-3">To-Do List</h5>
-            <span className="px-3">
-              A list of things you have to do. That means basically anything and
-              everything can be on your to-do list—just about anything!
-            </span>
+            <span className="px-3">A list of things you have to do.</span>
             <a
               className="btn m-2 mb-4"
               id="serv-btns"
-              onClick={() =>
-                handleShow(
-                  "To-Do List HISTORY",
-                  "The history of the to-do list dates back centuries, with its roots in human productivity and organization. The concept of listing tasks can be traced to ancient civilizations, where people used clay tablets, papyrus, or parchment to record important duties, transactions, and schedules. One of the earliest recorded examples comes from Benjamin Franklin in the 18th century, who famously maintained daily task lists as part of his structured approach to self-improvement. In the early 20th century, the rise of personal planners and paper-based task management, such as the Filofax and day planners, made to-do lists more systematic. The method gained further popularity with productivity techniques like the Eisenhower Matrix and David Allens Getting Things Done (GTD) framework, emphasizing prioritization and efficiency. With the advent of digital technology, to-do lists evolved from handwritten notes to applications like Microsoft Outlook’s task manager, Google Keep, and dedicated apps like Todoist and Trello, allowing for seamless task tracking across devices. Today, to-do lists continue to be an essential tool for personal and professional productivity, integrating AI, reminders, and automation to enhance efficiency in daily life."
-                )
-              }
+              onClick={() => handleShow("To-Do List", "...")}
             >
               Know more!
             </a>
           </div>
         </div>
+
         <div className="row d-flex justify-content-center">
-          <div className="col-md-5 m-1 card">
+          <div
+            className="col-md-5 m-1 card"
+            data-aos="zoom-in"
+            data-aos-delay="1400"
+          >
             <img
-              alt="place holder"
               src={Brainstorming}
               className="rounded mt-3"
               height={300}
+              alt="Brainstorming"
             />
             <h5 className="fw-semibold m-3">Brainstorming</h5>
             <span className="px-3">
-              A group problem-solving method that involves the spontaneous
-              contribution of creative ideas and solutions.
+              A group problem-solving method involving creative ideas.
             </span>
             <a
               className="btn m-2 mb-4"
               id="serv-btns"
-              onClick={() =>
-                handleShow(
-                  "Brainstorming",
-                  "The concept of brainstorming was introduced by advertising executive Alex Faickney Osborn in the 1940s as a structured approach to generating creative ideas. Osborn, co-founder of the advertising firm BBDO, first outlined the technique in his 1948 book Your Creative Power. He believed that group collaboration could produce more innovative solutions than individuals working alone. Osborn established four key principles for effective brainstorming: defer judgment, encourage wild ideas, aim for quantity, and build on others’ ideas. These rules aimed to create a free-thinking environment where creativity could flourish without fear of criticism.Interestingly, while brainstorming remains widely used, research has shown that traditional group brainstorming can sometimes be less effective than individual brainstorming due to issues like groupthink and social loafing. As a result, variations such as brainwriting, reverse brainstorming, and electronic brainstorming have emerged to improve efficiency and inclusivity. Despite its challenges, brainstorming remains a fundamental tool in creative problem-solving, widely used in business, education, and innovation processes."
-                )
-              }
+              onClick={() => handleShow("Brainstorming", "...")}
             >
               Know more!
             </a>
           </div>
-          <div className="col-md-5 m-1 card">
-            <img src={Tracker} className="rounded mt-3" height={300} />
+          <div
+            className="col-md-5 m-1 card"
+            data-aos="zoom-in"
+            data-aos-delay="1450"
+          >
+            <img
+              src={Tracker}
+              className="rounded mt-3"
+              height={300}
+              alt="Tracker"
+            />
             <h5 className="fw-semibold m-3">Tracker</h5>
             <span className="px-3">
-              Porvides individuals and teams with tools to plan, prioritize, and
-              track their activities efficiently
+              Plan, prioritize, and track activities efficiently.
             </span>
             <a
               className="btn m-2 mb-4"
               id="serv-btns"
-              onClick={() =>
-                handleShow(
-                  "Tracker",
-                  "Porvides individuals and teams with tools to plan, prioritize, and track their activities efficiently"
-                )
-              }
+              onClick={() => handleShow("Tracker", "...")}
             >
               Know more!
             </a>
           </div>
         </div>
+
         <div className="row d-flex justify-content-center">
-          <div className="col-md-5 m-1 card">
-            <img src={Reward} className="rounded mt-3" height={300} />
+          <div
+            className="col-md-5 m-1 card"
+            data-aos="zoom-in"
+            data-aos-delay="300"
+          >
+            <img
+              src={Reward}
+              className="rounded mt-3"
+              height={300}
+              alt="Reward System"
+            />
             <h5 className="fw-semibold m-3">EXP and Achievement</h5>
             <span className="px-3">
-              A reward system that encourages completing tasks by offering
-              incentives. It motivates users to create more tasks and stay
-              productive.
+              A reward system encouraging task completion and productivity.
             </span>
             <a
               className="btn m-2 mb-4"
               id="serv-btns"
-              onClick={() =>
-                handleShow(
-                  "EXP and Achievement",
-                  "A reward systems for completing tasks and make more task and stay productive"
-                )
-              }
+              onClick={() => handleShow("EXP and Achievement", "...")}
             >
               Know more!
             </a>
           </div>
-          <div className="col-md-5 m-1 card">
-            <img src={Focus} className="rounded mt-3" height={300} />
+          <div
+            className="col-md-5 m-1 card"
+            data-aos="zoom-in"
+            data-aos-delay="300"
+          >
+            <img
+              src={Focus}
+              className="rounded mt-3"
+              height={300}
+              alt="Focus Mode"
+            />
             <h5 className="fw-semibold m-3">Focus Mode</h5>
             <span className="px-3">
-              A mode that turns off any distractions on your device. It helps
-              you stay focused by blocking notifications and interruptions.
+              Block notifications and minimize distractions to stay focused.
             </span>
             <a
               className="btn m-2 mb-4"
               id="serv-btns"
-              onClick={() =>
-                handleShow(
-                  "Focus Mode",
-                  "A mode that turns off any distraction on your device"
-                )
-              }
+              onClick={() => handleShow("Focus Mode", "...")}
             >
               Know more!
             </a>
@@ -334,7 +401,13 @@ function Contentland() {
         </div>
       </div>
 
-      <Modal show={showModal} onHide={handleClose} centered>
+      <Modal
+        show={showModal}
+        onHide={handleClose}
+        centered
+        data-aos="fade-up"
+        data-aos-delay="300"
+      >
         <Modal.Header closeButton>
           <Modal.Title>{modalContent.title}</Modal.Title>
         </Modal.Header>
@@ -345,7 +418,8 @@ function Contentland() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <Footer />
+
+      <Footer data-aos="fade-up" data-aos-delay="300" />
     </React.Fragment>
   );
 }
