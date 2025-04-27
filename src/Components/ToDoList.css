@@ -1,92 +1,140 @@
-#custom-line1 {
-  stroke: #5030E5;
-  stroke-width: 5
+/* General container styles */
+.todo-list-container {
+  padding: 20px;
+  background-color: #f9f9f9;
 }
 
-#custom-line2 {
-
-  stroke: #FFCE1B;
-  stroke-width: 5
+.board-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
 }
-
-#custom-line3 {
-  stroke: #65713F;
-  stroke-width: 5
-}
-
-.task-card {
-  background-color: #fff;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
 
 .board-container {
   display: flex;
-  justify-content: space-between;
   gap: 20px;
-  padding: 20px;
+  justify-content: space-between;
+  overflow-x: auto;
+  padding: 10px;
 }
 
+/* Task column styles */
 .task-column {
   flex: 1;
   background-color: #f4f4f4;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  min-width: 300px;
 }
 
-.task-column h3 {
-  color: #4a90e2;
-  font-size: 1.2em;
-  margin-bottom: 20px;
-}
-
-.text-yellow-500 {
-  color: #f7b731;
-}
-
-.text-green-500 {
-  color: #6dbf4e;
-}
-
-.task-card {
-  background-color: #fff;
-  padding: 15px;
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 15px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.task-card h4 {
-  margin: 0;
+.column-title {
+  font-size: 1.2rem;
   font-weight: bold;
-  font-size: 1.1em;
+  margin-left: 10px;
 }
 
-.task-card p {
-  margin: 5px 0;
-  font-size: 0.95em;
-}
-
-.time-left {
-  font-size: 0.85em;
+.task-count {
+  font-size: 0.9rem;
   color: #888;
 }
 
-.add-task {
+.divider {
+  margin: 10px 0;
+}
+
+#custom-line1 {
+  stroke: #5030e5;
+  stroke-width: 5;
+}
+
+#custom-line2 {
+  stroke: #ffce1b;
+  stroke-width: 5;
+}
+
+#custom-line3 {
+  stroke: #65713f;
+  stroke-width: 5;
+}
+
+/* Task card styles */
+.task-card {
+  background-color: #fff;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-5px);
+}
+
+.task-card h5 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.task-card p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.time-left {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.task-card .badge {
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 12px;
+}
+
+.task-card .badge.bg-success {
+  background-color: #6dbf4e;
+  color: white;
+}
+
+.task-card .badge.bg-light {
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Add task button styles */
+.add-task-container {
   margin-top: 20px;
-  padding: 10px 15px;
+  text-align: center;
+}
+
+.add-task-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-task {
+  padding: 10px 20px;
   background-color: #4a90e2;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 1rem;
   transition: background-color 0.3s ease;
 }
 
@@ -94,38 +142,9 @@
   background-color: #357ab7;
 }
 
-.done {
-  color: green;
-  font-weight: bold;
-}
-
-progress {
-  width: 100%;
-  height: 15px;
-  margin-top: 5px;
-}
-
-#lvlprogress {
-  font-size: 1.1em;
-  margin-bottom: 20px;
-}
-
-.icons,
-.text {
-  vertical-align: middle;
-  display: inline-block;
-}
-
-#dot-btn {
-  padding: 0%;
-  margin: 0%;
-  border: none;
-}
-
-/* ToDoList.css or a separate CSS file */
+/* Modal styles */
 .modal {
   display: block;
-  /* Ensure modal is visible */
   position: fixed;
   z-index: 1;
   left: 0;
@@ -141,9 +160,10 @@ progress {
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 30%;
-  /* Adjust width as needed */
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .close-btn {
@@ -158,4 +178,50 @@ progress {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .board-container {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .task-column {
+    min-width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .board-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .task-column {
+    min-width: 100%;
+  }
+
+  .board-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .task-card {
+    padding: 10px;
+  }
+
+  .task-card h5 {
+    font-size: 1rem;
+  }
+
+  .task-card p {
+    font-size: 0.85rem;
+  }
+
+  .add-task {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
 }

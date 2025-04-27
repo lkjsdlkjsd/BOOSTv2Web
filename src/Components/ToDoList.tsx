@@ -419,56 +419,60 @@ const FcTodoList: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2 className="pt-2 ps-3">Board</h2>
-      <div className="board-container flex gap-4">
-        <div className="task-column">
-          <span className="icons col-sm-auto">
-            <svg height={13} width={10}>
-              <circle fill="blue" cx={5} cy={5} r={5} />
-            </svg>
-          </span>
-          <span className="ps-2 fw-medium text col-sm-auto">On Progress</span>
-
-          <svg height="2%" width="100%" className="mb-4 mt-2">
-            <line x1="0" y1="10" x2="100%" y2="10" id="custom-line1" />
+    <div className="todo-list-container">
+    <h2 className="board-title">To-Do List</h2>
+    <div className="board-container">
+      {/* On Progress Column */}
+      <div className="task-column">
+        <div className="column-header">
+          <svg height={13} width={10}>
+            <circle fill="#5030E5" cx={5} cy={5} r={5} />
           </svg>
-          {tasks
-            .filter((task) => task.status === "onProgress")
-            .map(renderTaskCard)}
+          <span className="column-title">On Progress</span>
+          <span className="task-count">2</span>
         </div>
-        <div className="task-column">
-          <span className="icons col-sm-auto">
-            <svg height={13} width={10}>
-              <circle fill="yellow" cx={5} cy={5} r={5} />
-            </svg>
-          </span>
-          <span className="ps-2 fw-medium text col-sm-auto">Pending</span>
-
-          <svg height="2%" width="100%" className="mb-4 mt-2">
-            <line x1="0" y1="10" x2="100%" y2="10" id="custom-line2" />
-          </svg>
-          {tasks
-            .filter((task) => task.status === "pending")
-            .map(renderTaskCard)}
-        </div>
-        <div className="task-column">
-          <div className="row">
-            <span className="icons col-sm-auto">
-              <svg height={13} width={10}>
-                <circle fill="green" cx={5} cy={5} r={5} />
-              </svg>
-            </span>
-            <span className="ps-2 fw-medium text col-sm-auto">Completed</span>
-          </div>
-          <svg height="2%" width="100%" className="mb-4 mt-2">
-            <line x1="0" y1="10" x2="100%" y2="10" id="custom-line3" />
-          </svg>
-          {tasks
-            .filter((task) => task.status === "completed")
-            .map(renderTaskCard)}
-        </div>
+        <svg height="2%" width="100%" className="divider">
+          <line x1="0" y1="10" x2="100%" y2="10" id="custom-line1" />
+        </svg>
+        {tasks
+          .filter((task) => task.status === "onProgress")
+          .map(renderTaskCard)}
       </div>
+
+      {/* Pending Column */}
+      <div className="task-column">
+        <div className="column-header">
+          <svg height={13} width={10}>
+            <circle fill="#FFCE1B" cx={5} cy={5} r={5} />
+          </svg>
+          <span className="column-title">Pending</span>
+          <span className="task-count">3</span>
+        </div>
+        <svg height="2%" width="100%" className="divider">
+          <line x1="0" y1="10" x2="100%" y2="10" id="custom-line2" />
+        </svg>
+        {tasks
+          .filter((task) => task.status === "pending")
+          .map(renderTaskCard)}
+      </div>
+
+      {/* Completed Column */}
+      <div className="task-column">
+        <div className="column-header">
+          <svg height={13} width={10}>
+            <circle fill="#65713F" cx={5} cy={5} r={5} />
+          </svg>
+          <span className="column-title">Completed</span>
+          <span className="task-count">3</span>
+        </div>
+        <svg height="2%" width="100%" className="divider">
+          <line x1="0" y1="10" x2="100%" y2="10" id="custom-line3" />
+        </svg>
+        {tasks
+          .filter((task) => task.status === "completed")
+          .map(renderTaskCard)}
+      </div>
+  </div>
       <div className="add-task-container">
         <button
           className="add-task d-flex justify-content-center"
