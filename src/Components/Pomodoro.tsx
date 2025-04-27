@@ -806,10 +806,10 @@ const PomodoroTimer: React.FC = () => {
           <h2
             className="display-1"
             style={{
-              fontSize: "10vw",
+              fontSize: "8rem",
               fontWeight: "900",
               ...(window.innerWidth <= 768 && {
-                fontSize: "19vw",
+                fontSize: "18vw",
               }),
             }}
           >
