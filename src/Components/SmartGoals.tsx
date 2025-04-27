@@ -5,6 +5,9 @@ import { FaEdit } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { Save } from "lucide-react";
 import { MdDelete } from "react-icons/md";
+import { db } from "../firebase"; // Firestore
+import { doc, setDoc } from "firebase/firestore";
+import { supabase } from "../supabase"; // Supabase Storage
 
 interface SmartGoalProps {
   onBack: () => void;
@@ -14,6 +17,7 @@ type Goal = {
   goal: string;
   textColor: string;
   bgColor: string;
+  createdAt: Date;
 };
 
 interface AddGoalModalProps {
@@ -39,9 +43,9 @@ function AddGoalModal({
 
   useEffect(() => {
     if (goalToEdit) {
-      setGoal(goalToEdit.goal || "");
-      setTextColor(goalToEdit.textColor || "#000000");
-      setBgColor(goalToEdit.bgColor || "#ffffff");
+      setGoal(goalToEdit.goal);
+      setTextColor(goalToEdit.textColor);
+      setBgColor(goalToEdit.bgColor);
     } else {
       setGoal("");
       setTextColor("#000000");
@@ -52,7 +56,12 @@ function AddGoalModal({
   if (!isOpen) return null;
 
   const handleSave = () => {
-    const goalData: Goal = { goal, textColor, bgColor };
+    const goalData: Goal = {
+      goal,
+      textColor,
+      bgColor,
+      createdAt: new Date(),
+    };
     if (goalToEdit) {
       onEdit(goalData);
     } else {
@@ -67,9 +76,7 @@ function AddGoalModal({
         <h2>
           {goalToEdit
             ? "Edit Goal"
-            : `New Goal for "${
-                category.charAt(0).toUpperCase() + category.slice(1)
-              }"`}
+            : `New Goal for "${category.charAt(0).toUpperCase() + category.slice(1)}"`}
         </h2>
         <label>
           Goal:
@@ -111,22 +118,23 @@ function AddGoalModal({
 interface SaveModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSave: () => void;
+  isSaving?: boolean;
 }
 
-function SaveModal({ isOpen, onClose }: SaveModalProps) {
+function SaveModal({ isOpen, onClose, onSave, isSaving }: SaveModalProps) {
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content bg-light">
         <h2>Save SMART Goals</h2>
-        <label>
-          Name:
-          <input type="text" />
-        </label>
         <div className="modal-buttons">
-          <button className="btn" onClick={onClose}>
-            Save
+          <button className="btn" onClick={onSave} disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save Now"}
+          </button>
+          <button className="btn" onClick={onClose} disabled={isSaving}>
+            Cancel
           </button>
         </div>
       </div>
@@ -147,6 +155,7 @@ export default function SmartGoals({ onBack }: SmartGoalProps) {
   const [currentCategory, setCurrentCategory] = useState("");
   const [goalToEdit, setGoalToEdit] = useState<Goal | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const openModal = (category: string, goal: Goal | null = null) => {
     setCurrentCategory(category);
@@ -159,16 +168,16 @@ export default function SmartGoals({ onBack }: SmartGoalProps) {
       ...prev,
       [category]: [...prev[category], newGoal],
     }));
+    autoSave();
   };
 
   const editGoal = (category: string, updatedGoal: Goal) => {
     setGoals((prev) => ({
       ...prev,
-      [category]: prev[category].map((g) =>
-        g === goalToEdit ? updatedGoal : g
-      ),
+      [category]: prev[category].map((g) => (g === goalToEdit ? updatedGoal : g)),
     }));
     setGoalToEdit(null);
+    autoSave();
   };
 
   const deleteGoal = (category: string, goalToDelete: Goal) => {
@@ -176,6 +185,39 @@ export default function SmartGoals({ onBack }: SmartGoalProps) {
       ...prev,
       [category]: prev[category].filter((g) => g !== goalToDelete),
     }));
+    autoSave();
+  };
+
+  const saveGoalsToFirestore = async () => {
+    const userDoc = doc(db, "smartGoals", "userGoals");
+    await setDoc(userDoc, { goals });
+    console.log("Saved to Firestore");
+  };
+
+  const saveGoalsToSupabaseStorage = async () => {
+    const goalsBlob = new Blob([JSON.stringify(goals)], { type: "application/json" });
+    const fileName = `smart-goals-backup-${Date.now()}.json`;
+
+    const { data, error } = await supabase.storage
+      .from("smart-goals-backups")
+      .upload(fileName, goalsBlob, { contentType: "application/json" });
+
+    if (error) {
+      console.error("Supabase upload error:", error.message);
+      throw new Error(error.message);
+    } else {
+      console.log("Backup uploaded to Supabase Storage:", data?.path);
+    }
+  };
+
+  const autoSave = async () => {
+    try {
+      await saveGoalsToFirestore();
+      await saveGoalsToSupabaseStorage();
+    } catch (error) {
+      console.error("Auto-save error:", error);
+      throw error;
+    }
   };
 
   return (
@@ -249,6 +291,18 @@ export default function SmartGoals({ onBack }: SmartGoalProps) {
       <SaveModal
         isOpen={showSaveModal}
         onClose={() => setShowSaveModal(false)}
+        onSave={async () => {
+          try {
+            setIsSaving(true);
+            await autoSave();
+            setShowSaveModal(false);
+          } catch (error) {
+            alert("Failed to save SMART goals. Please try again.");
+          } finally {
+            setIsSaving(false);
+          }
+        }}
+        isSaving={isSaving}
       />
     </>
   );

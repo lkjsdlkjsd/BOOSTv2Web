@@ -13,6 +13,9 @@ import ReactFlow, {
   Node,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { supabase } from "../supabase"; // Import Supabase client
+import { db } from "../firebase"; // Import Firebase Firestore client
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 interface MindFlowProps {
   onBack: () => void;
@@ -55,6 +58,9 @@ export default function MindFlow({ onBack }: MindFlowProps) {
     color: "#ffffff",
     textColor: "#000000",
   });
+
+  const [fileName, setFileName] = useState<string>("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const onConnect = useCallback(
     (connection: Connection) => setEdges((eds) => addEdge(connection, eds)),
@@ -176,6 +182,49 @@ export default function MindFlow({ onBack }: MindFlowProps) {
     setSelectedNodeId(null);
   };
 
+  // Handle saving MindFlow to Supabase and Firestore
+  const handleSaveFile = async () => {
+    if (!fileName.trim()) {
+      setMessage("Please provide a file name.");
+      return;
+    }
+
+    try {
+      const fileContent = JSON.stringify({ nodes, edges }, null, 2);
+      const blob = new Blob([fileContent], { type: "application/json" });
+      const filePath = `mindflows/${fileName}.json`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("your-storage-bucket")
+        .upload(filePath, blob, {
+          cacheControl: "3600",
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error(uploadError);
+        setMessage("Failed to upload file to Supabase.");
+        return;
+      }
+
+      // Save metadata in Firestore
+      await addDoc(collection(db, "mindflows"), {
+        fileName: fileName,
+        filePath: filePath,
+        createdAt: serverTimestamp(),
+        nodesCount: nodes.length,
+        edgesCount: edges.length,
+      });
+
+      setMessage("MindFlow saved successfully!");
+      setIsSaving(false);
+      setFileName("");
+    } catch (error) {
+      console.error(error);
+      setMessage("An error occurred while saving the file.");
+    }
+  };
+
   return (
     <React.Fragment>
       {/* Updated Header Section */}
@@ -186,7 +235,7 @@ export default function MindFlow({ onBack }: MindFlowProps) {
           style={{ cursor: "pointer" }}
         />
         <h2 className="text-center flex-grow-1 m-0">Mind Flow</h2>
-        <Save size={30} style={{ cursor: "pointer" }} />
+        <Save size={30} style={{ cursor: "pointer" }} onClick={() => setIsSaving(true)} />
       </div>
 
       <div id="flow">
@@ -207,23 +256,14 @@ export default function MindFlow({ onBack }: MindFlowProps) {
           <Background />
         </ReactFlow>
       </div>
+
       <div
-        className={`add-node-container ${
-          isAddModalOpen || isEditModalOpen ? "hidden" : ""
-        }`}
+        className={`add-node-container ${isAddModalOpen || isEditModalOpen ? "hidden" : ""}`}
       >
-        <button onClick={addNode} className="btn">
-          Add Node
-        </button>
-        <button onClick={deleteNode} className="btn">
-          Delete Node
-        </button>
-        <button onClick={editNode} className="btn">
-          Edit Node
-        </button>
-        <button onClick={deleteEdge} className="btn">
-          Delete Line
-        </button>
+        <button onClick={addNode} className="btn">Add Node</button>
+        <button onClick={deleteNode} className="btn">Delete Node</button>
+        <button onClick={editNode} className="btn">Edit Node</button>
+        <button onClick={deleteEdge} className="btn">Delete Line</button>
       </div>
 
       {isAddModalOpen && (
@@ -259,12 +299,8 @@ export default function MindFlow({ onBack }: MindFlowProps) {
               }
             />
           </label>
-          <button onClick={handleAddSubmit} className="btn">
-            Add
-          </button>
-          <button onClick={() => setIsAddModalOpen(false)} className="btn">
-            Cancel
-          </button>
+          <button onClick={handleAddSubmit} className="btn">Add</button>
+          <button onClick={() => setIsAddModalOpen(false)} className="btn">Cancel</button>
         </div>
       )}
 
@@ -301,17 +337,31 @@ export default function MindFlow({ onBack }: MindFlowProps) {
               }
             />
           </label>
-          <button onClick={handleEditSubmit} className="btn">
-            Save
-          </button>
-          <button onClick={() => setIsEditModalOpen(false)} className="btn">
-            Cancel
-          </button>
+          <button onClick={handleEditSubmit} className="btn">Save</button>
+          <button onClick={() => setIsEditModalOpen(false)} className="btn">Cancel</button>
         </div>
       )}
 
       {message && (
         <MessageModal message={message} onClose={() => setMessage(null)} />
+      )}
+
+      {/* Save File Modal */}
+      {isSaving && (
+        <div className="edit-modal">
+          <h3>Save MindFlow</h3>
+          <label>
+            File Name:
+            <input
+              type="text"
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value)}
+              placeholder="Enter file name"
+            />
+          </label>
+          <button onClick={handleSaveFile} className="btn">Save</button>
+          <button onClick={() => setIsSaving(false)} className="btn">Cancel</button>
+        </div>
       )}
     </React.Fragment>
   );
